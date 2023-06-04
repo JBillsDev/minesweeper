@@ -17,15 +17,14 @@ const difficultyHardBtn = document.getElementById('difficulty-hard');
 let gridArrayEmpty = [];
 let gridArrayMined = [];
 
-const maxMinePercentage = 0.6;
-let chosenMineCount = 30;
+let chosenMineCount = 0;
 let flagPlacementEnabled = false;
 
 let gridWidth = 0;
 let gridHeight = 0;
 let gridSize = 0;
 let gridSizeCurrent = 'medium';
-let difficultycurrent = 'medium';
+let difficultyCurrent = 'medium';
 
 function checkForMines(index) {
   const checkedNodes = [];
@@ -91,7 +90,7 @@ function clearGrid() {
   grid.innerHTML = '';
 }
 
-function createGrid(mineCount) {
+function createGrid() {
   // Clear the existing grid.
   clearGrid();
   
@@ -139,18 +138,23 @@ function createGrid(mineCount) {
     }
   }
 
-  createMines(mineCount);
+  createMines();
 }
 
-function createMines(count) {
-  const maxMineCount = Math.floor(gridArrayEmpty.length * maxMinePercentage);
-  let mineCount = count;
-
-  if (mineCount > maxMineCount) {
-    mineCount = maxMineCount;
+function createMines() {
+  switch(difficultyCurrent) {
+    case 'easy':
+      chosenMineCount = Math.floor(gridSize * 0.15);
+      break;
+    case 'medium':
+      chosenMineCount = Math.floor(gridSize * 0.25);
+      break;
+    case 'hard':
+      chosenMineCount = Math.floor(gridSize * 0.33);
+      break;
   }
 
-  for (let index = 0; index < mineCount; ++index) {
+  for (let index = 0; index < chosenMineCount; ++index) {
     const rand = Math.floor(Math.random() * gridArrayEmpty.length);
 
     // Remove the node from the empty list
@@ -257,6 +261,8 @@ function init() {
       menuBtn.classList.remove('active');
       
       // Remove active class from child menus.
+      difficultyBtn.classList.remove('active');
+      difficultyMenu.classList.remove('active');
       gridSizeBtn.classList.remove('active');
       gridSizeMenu.classList.remove('active');
     } else {
@@ -267,8 +273,8 @@ function init() {
 
   // Set the grid size menu active on click.
   gridSizeBtn.addEventListener('click', () => {
-    gridDifficultyBtn.classList.remove('active');
-    gridDifficultyMenu.classList.remove('active');
+    difficultyBtn.classList.remove('active');
+    difficultyMenu.classList.remove('active');
 
     if (gridSizeBtn.classList.contains('active')) {
       gridSizeBtn.classList.remove('active');
@@ -299,9 +305,9 @@ function init() {
   });
 
   // Set the difficulty buttons click callbacks
-  gridSizeSmallBtn.addEventListener('click', () => setDifficulty('easy'));
-  gridSizeMediumBtn.addEventListener('click', () => setDifficulty('medium'));
-  gridSizeLargeBtn.addEventListener('click', () => setDifficultySize('hard'));
+  difficultyEasyBtn.addEventListener('click', () => setDifficulty('easy'));
+  difficultyMediumBtn.addEventListener('click', () => setDifficulty('medium'));
+  difficultyHardBtn.addEventListener('click', () => setDifficulty('hard'));
 
   // Set the Github link to 'beat' when moused over.
   let githubLink = document.getElementById('minesweeper-github');
@@ -314,7 +320,7 @@ function init() {
   });
 
   // Create the default size grid.
-  createGrid(chosenMineCount);
+  createGrid();
 }
 
 function onNodeClick(node, index) {
@@ -332,7 +338,7 @@ function onNodeClick(node, index) {
   // If a mine was uncovered, game over.
   if (gridArrayMined.indexOf(index) != -1) {
     // Create a new grid with the previous dimensions
-    createGrid(chosenMineCount);
+    createGrid();
     return;
   }
 
@@ -340,29 +346,29 @@ function onNodeClick(node, index) {
 }
 
 function setDifficulty(difficultyString) {
-  if (difficultycurrent == difficultyString) {
+  if (difficultyCurrent == difficultyString) {
     return;
   }
 
-  difficultycurrent = difficultyString;
+  difficultyCurrent = difficultyString;
 
   difficultyEasyBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
   difficultyMediumBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
   difficultyHardBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
 
-  switch(gridSizeString) {
-    case 'small':
-      gridSizeSmallBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
+  switch(difficultyCurrent) {
+    case 'easy':
+      difficultyEasyBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
       break;
     case 'medium':
-      gridSizeMediumBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
+      difficultyMediumBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
       break;
-    case 'large':
-      gridSizeLargeBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
+    case 'hard':
+      difficultyHardBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
       break;
   }
 
-  createGrid(20)
+  createGrid()
 }
 
 function setGridSize(gridSizeString) {
@@ -388,7 +394,7 @@ function setGridSize(gridSizeString) {
       break;
   }
 
-  createGrid(20)
+  createGrid()
 }
 
 init();

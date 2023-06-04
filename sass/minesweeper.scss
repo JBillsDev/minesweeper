@@ -18,17 +18,21 @@ $minesweeper-border-size: 4px;
     color: #fff;
   }
 
-  // The element above the game grid
+  footer,
   header {
     color: #fff;
     text-align: center;
     display: flex;
     justify-content: space-between;
     align-items: center; 
-    border-bottom: $minesweeper-border-size #999 solid;;
-    height: $minesweeper-head-height;
     user-select: none;
 
+  }
+
+  // The element above the game grid
+  header {
+    border-bottom: $minesweeper-border-size #999 solid;
+    height: $minesweeper-head-height;
     h1 {
       flex-grow: 1;
     }
@@ -91,6 +95,10 @@ $minesweeper-border-size: 4px;
     #minesweeper-github:hover {
       color: #777;
     }
+  }
+
+  footer {
+    $minesweeper-head-height: 70px;
   }
 
   // The grid where the game is played
