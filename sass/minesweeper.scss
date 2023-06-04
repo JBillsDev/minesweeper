@@ -1,21 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 $minesweeper-width: 400px;
 $minesweeper-width-half: calc($minesweeper-width/2);
-$minesweeper-head-height: 70px;
+$minesweeper-head-height: 50px;
 $minesweeper-border-size: 4px;
 
 #minesweeper {
   background: #333;
   width: $minesweeper-width;
   height: 600px;
-  min-width: 200px;
-  min-height: 300px;
+  width: 400px;
   display: flex;
   flex-direction: column;
-  font-size: 2.5rem;
+  font-family: 'Press Start 2P', sans-serif;
+  font-size: 1.5rem;
   border: $minesweeper-border-size #999 solid;
 
   a {
     color: #fff;
+    font-size: 2rem;
   }
 
   footer,
@@ -26,15 +29,16 @@ $minesweeper-border-size: 4px;
     justify-content: space-between;
     align-items: center; 
     user-select: none;
-
+    height: $minesweeper-head-height;
   }
 
   // The element above the game grid
   header {
     border-bottom: $minesweeper-border-size #999 solid;
-    height: $minesweeper-head-height;
+
     h1 {
       flex-grow: 1;
+      font-size: 2.4rem;
     }
 
     i {
@@ -69,9 +73,10 @@ $minesweeper-border-size: 4px;
           color: #fff;
           border: $minesweeper-border-size #999 solid;
           border-top: none;
-          padding: 6px 10px;
+          padding: 6px 4px;
           display:flex;
           align-items: center;
+          font-size: 1.3rem;
 
           p {
             display: inline-block;
@@ -98,13 +103,36 @@ $minesweeper-border-size: 4px;
   }
 
   footer {
-    $minesweeper-head-height: 70px;
+    padding: 15px;
+
+    div {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 160px;
+      font-size: 1.6rem;
+
+      h2 {
+        background: #222;
+        color: red;
+        padding: 8px;
+        font-size: 2rem;
+        text-align: center;
+        border-top: 2px #555 solid;
+        border-left: 2px #555 solid;
+        border-bottom: 2px #111 solid;
+        border-right: 2px #111 solid;
+      }
+    }
   }
 
   // The grid where the game is played
   .grid {
     flex-grow: 1;
     display: grid;
+    font-size: 0.8rem;
+    line-height: 0.8rem;
+    margin:0;
 
     // A clickable node, may be empty or mined
     .grid-node {
@@ -134,12 +162,11 @@ $minesweeper-border-size: 4px;
         border: $minesweeper-border-size #aae solid;
         width: 100%;
         height: 100%;
-        line-height: 0.8rem;
         display: flex;
+        padding-top: 5px;
         justify-content: center;
         align-items: center;
         overflow: hidden;
-        font-size: 2rem;
         color: #fff;
 
         &:hover {
