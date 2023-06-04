@@ -3,6 +3,9 @@ const grid = minesweeper.querySelector('.grid');
 const gridSizeBtn = document.getElementById('grid-size-btn');
 const gridSizeMenu = document.getElementById('grid-size-menu');
 const menuBtn = document.getElementById('minesweeper-menu-btn');
+const gridSizeSmallBtn = document.getElementById('grid-size-small');
+const gridSizeMediumBtn = document.getElementById('grid-size-medium');
+const gridSizeLargeBtn = document.getElementById('grid-size-large');
 
 let gridArrayEmpty = [];
 let gridArrayMined = [];
@@ -11,9 +14,65 @@ const maxMinePercentage = 0.6;
 let chosenMineCount = 30;
 let flagPlacementEnabled = false;
 
-let gridWidth = 10;
-let gridHeight = Math.floor(gridWidth * 1.5);
-let gridSize = gridWidth * gridHeight;
+let gridWidth = 0;
+let gridHeight = 0;
+let gridSize = 0;
+let gridSizeCurrent = 'medium';
+
+function checkForMines(index) {
+  const checkedNodes = [];
+  const uncheckedNodes = [index];
+
+  let iteration = 0;
+  while (uncheckedNodes.length > 0 && iteration < 100) {
+    // Get valid, neighboring nodes
+    const neighborArray = getNeighborNodes(uncheckedNodes[0]);
+
+    // Determine how many neighbors contain mines.
+    let neighboringMines = 0;
+    for (let count = 0; count < neighborArray.length; count++) {
+      if (gridArrayMined.indexOf(neighborArray[count]) != -1) {
+        neighboringMines++;
+      }
+    }
+
+    // Grab a reference to the current node.
+    const currentNode = document
+      .getElementById(`grid-node-${uncheckedNodes[0]}`);
+    
+    currentNode.classList.add('clicked');
+    currentNode.onclick = 0;
+
+    /* If node has any neighboring mines, display the number of
+    neighboring mines, and do not add neighbors to uncheckedNodes.
+    Otherwise, show an empty tile as clicked. */
+    if (neighboringMines != 0) {
+      currentNode.querySelector('div').textContent = neighboringMines;
+      
+      // Return if the is the original node clicked.
+      if (index == uncheckedNodes[0]) {
+        return;
+      }
+    } else {
+      /* If node does not have any mines for neighbors, check all of
+      its neighboring nodes, making sure not to add a node that has
+      already been evaluated, or marked for evaluation, to either list. */
+      for (let i = 0; i < neighborArray.length; ++i) {
+        const value = neighborArray[i];
+        if (checkedNodes.indexOf(value) === -1) {
+          if (uncheckedNodes.indexOf(value) === -1) {
+            uncheckedNodes.push(value);
+          }
+        }
+      }
+    }
+
+    // Move the current node to the checked list.
+    checkedNodes.push(uncheckedNodes.shift());
+
+    iteration++;
+  }
+}
 
 function clearGrid() {
   // Clear the empty and mined arrays
@@ -22,14 +81,25 @@ function clearGrid() {
 
   // Clear the nodes from the grid
   grid.innerHTML = '';
-
-  // Create a new grid with the previous dimensions
-  createGrid(gridWidth, gridHeight, chosenMineCount);
 }
 
-function createGrid(width, height, mineCount) {
-  gridWidth = width;
-  gridHeight = height;
+function createGrid(mineCount) {
+  // Clear the existing grid.
+  clearGrid();
+  
+  switch(gridSizeCurrent) {
+    case 'small':
+      gridWidth = 8;
+      break;
+    case 'medium':
+      gridWidth = 10;
+      break;
+    case 'large':
+      gridWidth = 14;
+      break;
+  }
+  
+  gridHeight = Math.floor(gridWidth * 1.5);
   gridSize = gridWidth * gridHeight;
 
   grid.style.gridTemplateColumns = `repeat(${gridWidth}, 1fr)`;
@@ -64,10 +134,6 @@ function createGrid(width, height, mineCount) {
   createMines(mineCount);
 }
 
-function createHintNumbers() {
-
-}
-
 function createMines(count) {
   const maxMineCount = Math.floor(gridArrayEmpty.length * maxMinePercentage);
   let mineCount = count;
@@ -83,14 +149,6 @@ function createMines(count) {
     const node = gridArrayEmpty.splice(rand, 1);
     gridArrayMined.push(node[0]);
   }
-
-  createHintNumbers();
-}
-
-/* Extract digits from string using regexp, and rejoin the
-the digits to a string, excluding the commas. */
-function extractIDFromString(idString) {
-  return idString.match(/[0-9]/g).join("");
 }
 
 function getNeighborNodes(index) {
@@ -184,7 +242,7 @@ function init() {
   });
 
   // Set the menu to active on click
-  menuBtn.addEventListener('click', (e) => {
+  menuBtn.addEventListener('click', () => {
     let menu = document.getElementById('minesweeper-menu');
     if (menuBtn.classList.contains('active')) {
       menu.classList.remove('active');
@@ -210,7 +268,23 @@ function init() {
     }
   });
 
-  createGrid(gridWidth, gridHeight, chosenMineCount);
+  // Set the grid size buttons click callbacks
+  gridSizeSmallBtn.addEventListener('click', () => setGridSize('small'));
+  gridSizeMediumBtn.addEventListener('click', () => setGridSize('medium'));
+  gridSizeLargeBtn.addEventListener('click', () => setGridSize('large'));
+
+  // Set the Github link to 'beat' when moused over.
+  let githubLink = document.getElementById('minesweeper-github');
+  githubLink.addEventListener('mouseenter', () => {
+    githubLink.classList.add('fa-beat');
+  });
+
+  githubLink.addEventListener('mouseleave', () => {
+    githubLink.classList.remove('fa-beat');
+  });
+
+  // Create the default size grid.
+  createGrid(chosenMineCount);
 }
 
 function onNodeClick(node, index) {
@@ -227,66 +301,38 @@ function onNodeClick(node, index) {
 
   // If a mine was uncovered, game over.
   if (gridArrayMined.indexOf(index) != -1) {
-    clearGrid();
+    // Create a new grid with the previous dimensions
+    createGrid(chosenMineCount);
     return;
   }
 
   checkForMines(index);
 }
 
-function checkForMines(index) {
-  const checkedNodes = [];
-  const uncheckedNodes = [index];
-
-  let iteration = 0;
-  while (uncheckedNodes.length > 0 && iteration < 100) {
-    // Get valid, neighboring nodes
-    const neighborArray = getNeighborNodes(uncheckedNodes[0]);
-
-    // Determine how many neighbors contain mines.
-    let neighboringMines = 0;
-    for (let count = 0; count < neighborArray.length; count++) {
-      if (gridArrayMined.indexOf(neighborArray[count]) != -1) {
-        neighboringMines++;
-      }
-    }
-
-    // Grab a reference to the current node.
-    const currentNode = document
-      .getElementById(`grid-node-${uncheckedNodes[0]}`);
-    
-    currentNode.classList.add('clicked');
-    currentNode.onclick = 0;
-
-    /* If node has any neighboring mines, display the number of
-    neighboring mines, and do not add neighbors to uncheckedNodes.
-    Otherwise, show an empty tile as clicked. */
-    if (neighboringMines != 0) {
-      currentNode.querySelector('div').textContent = neighboringMines;
-      
-      // Return if the is the original node clicked.
-      if (index == uncheckedNodes[0]) {
-        return;
-      }
-    } else {
-      /* If node does not have any mines for neighbors, check all of
-      its neighboring nodes, making sure not to add a node that has
-      already been evaluated, or marked for evaluation, to either list. */
-      for (let i = 0; i < neighborArray.length; ++i) {
-        const value = neighborArray[i];
-        if (checkedNodes.indexOf(value) === -1) {
-          if (uncheckedNodes.indexOf(value) === -1) {
-            uncheckedNodes.push(value);
-          }
-        }
-      }
-    }
-
-    // Move the current node to the checked list.
-    checkedNodes.push(uncheckedNodes.shift());
-
-    iteration++;
+function setGridSize(gridSizeString) {
+  if (gridSizeString === gridSizeCurrent) {
+    return;
   }
+
+  gridSizeCurrent = gridSizeString;
+
+  gridSizeSmallBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
+  gridSizeMediumBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
+  gridSizeLargeBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
+
+  switch(gridSizeString) {
+    case 'small':
+      gridSizeSmallBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
+      break;
+    case 'medium':
+      gridSizeMediumBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
+      break;
+    case 'large':
+      gridSizeLargeBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
+      break;
+  }
+
+  createGrid(20)
 }
 
 init();
