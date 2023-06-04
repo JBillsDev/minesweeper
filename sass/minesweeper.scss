@@ -83,7 +83,7 @@ $minesweeper-border-size: 4px;
       }
 
       #grid-size-menu,
-      #grid-difficulty-menu {
+      #difficulty-menu {
         right: calc($minesweeper-width-half - $minesweeper-border-size);
       }
     }
