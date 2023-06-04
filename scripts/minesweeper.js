@@ -363,6 +363,11 @@ function onNodeClick(node, index) {
 
   // If a mine was uncovered, game over.
   if (gridArrayMined.indexOf(index) != -1) {
+    minesweeper.classList.add('game-over');
+    setTimeout(() => {
+      minesweeper.classList.remove('game-over');
+    }, 500);
+
     // Create a new grid with the previous dimensions
     createGrid();
     return;
