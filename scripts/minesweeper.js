@@ -1,23 +1,27 @@
 const minesweeper = document.getElementById('minesweeper');
 const grid = minesweeper.querySelector('.grid');
 const menuBtn = document.getElementById('minesweeper-menu-btn');
-// Grid Size elements
+// Grid Size Elements
 const gridSizeBtn = document.getElementById('grid-size-btn');
 const gridSizeMenu = document.getElementById('grid-size-menu');
 const gridSizeSmallBtn = document.getElementById('grid-size-small');
 const gridSizeMediumBtn = document.getElementById('grid-size-medium');
 const gridSizeLargeBtn = document.getElementById('grid-size-large');
-// Difficulty elements
+// Difficulty Elements
 const difficultyBtn = document.getElementById('difficulty-btn');
 const difficultyMenu = document.getElementById('difficulty-menu');
 const difficultyEasyBtn = document.getElementById('difficulty-easy');
 const difficultyMediumBtn = document.getElementById('difficulty-medium');
 const difficultyHardBtn = document.getElementById('difficulty-hard');
+// GUI Counteers
+let guiCounterMines = document.getElementById('mine-count');
+let guiCounterFlags = document.getElementById('flag-count');
 
 let gridArrayEmpty = [];
 let gridArrayMined = [];
 
 let chosenMineCount = 0;
+let flagsPlaced = 0;
 let flagPlacementEnabled = false;
 
 let gridWidth = 0;
@@ -142,6 +146,7 @@ function createGrid() {
 }
 
 function createMines() {
+  // Determin total mine count from grid size and difficulty.
   switch(difficultyCurrent) {
     case 'easy':
       chosenMineCount = Math.floor(gridSize * 0.15);
@@ -154,13 +159,18 @@ function createMines() {
       break;
   }
 
+  // Select random nodes to receive mines.
   for (let index = 0; index < chosenMineCount; ++index) {
     const rand = Math.floor(Math.random() * gridArrayEmpty.length);
 
-    // Remove the node from the empty list
+    // Remove the node from the empty list.
     const node = gridArrayEmpty.splice(rand, 1);
     gridArrayMined.push(node[0]);
   }
+
+  // Update GUI for mine and flag count.
+  guiCounterMines.innerText = chosenMineCount;
+  guiCounterFlags.innerText = chosenMineCount;
 }
 
 function getNeighborNodes(index) {
@@ -319,6 +329,9 @@ function init() {
     githubLink.classList.remove('fa-beat');
   });
 
+  setDifficulty('medium');
+  setGridSize('medium');
+
   // Create the default size grid.
   createGrid();
 }
@@ -326,10 +339,23 @@ function init() {
 function onNodeClick(node, index) {
   if (flagPlacementEnabled) {
     const child = node.querySelector('div');
+
+    /* If flag placement is currently enabled, spend a flag
+    to mark the node, and remove 1 from the GUI flag counter.
+    Else, remove the flag marg, and return 1 flag. */
     if (child.innerHTML === "") {
+      // If no flags remaining, return.
+      if (chosenMineCount - flagsPlaced <= 0) {
+        return;
+      }
+
       child.innerHTML = `<i class="fa-regular fa-flag"></i>`
+      flagsPlaced++;
+      updateFlagsCount();
     } else {
       child.innerHTML = '';
+      flagsPlaced--;
+      updateFlagsCount();
     }
 
     return;
@@ -346,10 +372,6 @@ function onNodeClick(node, index) {
 }
 
 function setDifficulty(difficultyString) {
-  if (difficultyCurrent == difficultyString) {
-    return;
-  }
-
   difficultyCurrent = difficultyString;
 
   difficultyEasyBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
@@ -372,10 +394,6 @@ function setDifficulty(difficultyString) {
 }
 
 function setGridSize(gridSizeString) {
-  if (gridSizeString === gridSizeCurrent) {
-    return;
-  }
-
   gridSizeCurrent = gridSizeString;
 
   gridSizeSmallBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
@@ -385,16 +403,26 @@ function setGridSize(gridSizeString) {
   switch(gridSizeString) {
     case 'small':
       gridSizeSmallBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
+      grid.style.setProperty('font-size', '2rem');
+      grid.style.setProperty('padding-top', '5px');
       break;
     case 'medium':
       gridSizeMediumBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
+      grid.style.setProperty('font-size', '1.2rem');
+      grid.style.setProperty('padding-top', '3px');
       break;
     case 'large':
       gridSizeLargeBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
+      grid.style.setProperty('font-size', '0.8rem');
+      grid.style.setProperty('padding-top', '-3px');
       break;
   }
 
   createGrid()
+}
+
+function updateFlagsCount() {
+  guiCounterFlags.innerText = chosenMineCount - flagsPlaced;
 }
 
 init();
