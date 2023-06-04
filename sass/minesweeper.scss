@@ -181,6 +181,7 @@ $minesweeper-border-size: 4px;
         align-items: center;
         overflow: hidden;
         color: #fff;
+        user-select: none;
 
         &:hover {
           border: $minesweeper-border-size #dde solid;
