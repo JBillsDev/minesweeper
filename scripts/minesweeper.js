@@ -1,19 +1,85 @@
 const minesweeper = document.getElementById('minesweeper');
 const grid = minesweeper.querySelector('.grid');
+const menuBtn = document.getElementById('minesweeper-menu-btn');
+// Grid Size elements
 const gridSizeBtn = document.getElementById('grid-size-btn');
 const gridSizeMenu = document.getElementById('grid-size-menu');
-const menuBtn = document.getElementById('minesweeper-menu-btn');
+const gridSizeSmallBtn = document.getElementById('grid-size-small');
+const gridSizeMediumBtn = document.getElementById('grid-size-medium');
+const gridSizeLargeBtn = document.getElementById('grid-size-large');
+// Difficulty elements
+const difficultyBtn = document.getElementById('difficulty-btn');
+const difficultyMenu = document.getElementById('difficulty-menu');
+const difficultyEasyBtn = document.getElementById('difficulty-easy');
+const difficultyMediumBtn = document.getElementById('difficulty-medium');
+const difficultyHardBtn = document.getElementById('difficulty-hard');
 
 let gridArrayEmpty = [];
 let gridArrayMined = [];
 
-const maxMinePercentage = 0.6;
-let chosenMineCount = 30;
+let chosenMineCount = 0;
 let flagPlacementEnabled = false;
 
-let gridWidth = 10;
-let gridHeight = Math.floor(gridWidth * 1.5);
-let gridSize = gridWidth * gridHeight;
+let gridWidth = 0;
+let gridHeight = 0;
+let gridSize = 0;
+let gridSizeCurrent = 'medium';
+let difficultyCurrent = 'medium';
+
+function checkForMines(index) {
+  const checkedNodes = [];
+  const uncheckedNodes = [index];
+
+  let iteration = 0;
+  while (uncheckedNodes.length > 0 && iteration < 100) {
+    // Get valid, neighboring nodes
+    const neighborArray = getNeighborNodes(uncheckedNodes[0]);
+
+    // Determine how many neighbors contain mines.
+    let neighboringMines = 0;
+    for (let count = 0; count < neighborArray.length; count++) {
+      if (gridArrayMined.indexOf(neighborArray[count]) != -1) {
+        neighboringMines++;
+      }
+    }
+
+    // Grab a reference to the current node.
+    const currentNode = document
+      .getElementById(`grid-node-${uncheckedNodes[0]}`);
+    
+    currentNode.classList.add('clicked');
+    currentNode.onclick = 0;
+
+    /* If node has any neighboring mines, display the number of
+    neighboring mines, and do not add neighbors to uncheckedNodes.
+    Otherwise, show an empty tile as clicked. */
+    if (neighboringMines != 0) {
+      currentNode.querySelector('div').textContent = neighboringMines;
+      
+      // Return if the is the original node clicked.
+      if (index == uncheckedNodes[0]) {
+        return;
+      }
+    } else {
+      /* If node does not have any mines for neighbors, check all of
+      its neighboring nodes, making sure not to add a node that has
+      already been evaluated, or marked for evaluation, to either list. */
+      for (let i = 0; i < neighborArray.length; ++i) {
+        const value = neighborArray[i];
+        if (checkedNodes.indexOf(value) === -1) {
+          if (uncheckedNodes.indexOf(value) === -1) {
+            uncheckedNodes.push(value);
+          }
+        }
+      }
+    }
+
+    // Move the current node to the checked list.
+    checkedNodes.push(uncheckedNodes.shift());
+
+    iteration++;
+  }
+}
 
 function clearGrid() {
   // Clear the empty and mined arrays
@@ -22,14 +88,25 @@ function clearGrid() {
 
   // Clear the nodes from the grid
   grid.innerHTML = '';
-
-  // Create a new grid with the previous dimensions
-  createGrid(gridWidth, gridHeight, chosenMineCount);
 }
 
-function createGrid(width, height, mineCount) {
-  gridWidth = width;
-  gridHeight = height;
+function createGrid() {
+  // Clear the existing grid.
+  clearGrid();
+  
+  switch(gridSizeCurrent) {
+    case 'small':
+      gridWidth = 8;
+      break;
+    case 'medium':
+      gridWidth = 10;
+      break;
+    case 'large':
+      gridWidth = 14;
+      break;
+  }
+  
+  gridHeight = Math.floor(gridWidth * 1.5);
   gridSize = gridWidth * gridHeight;
 
   grid.style.gridTemplateColumns = `repeat(${gridWidth}, 1fr)`;
@@ -61,36 +138,29 @@ function createGrid(width, height, mineCount) {
     }
   }
 
-  createMines(mineCount);
+  createMines();
 }
 
-function createHintNumbers() {
-
-}
-
-function createMines(count) {
-  const maxMineCount = Math.floor(gridArrayEmpty.length * maxMinePercentage);
-  let mineCount = count;
-
-  if (mineCount > maxMineCount) {
-    mineCount = maxMineCount;
+function createMines() {
+  switch(difficultyCurrent) {
+    case 'easy':
+      chosenMineCount = Math.floor(gridSize * 0.15);
+      break;
+    case 'medium':
+      chosenMineCount = Math.floor(gridSize * 0.25);
+      break;
+    case 'hard':
+      chosenMineCount = Math.floor(gridSize * 0.33);
+      break;
   }
 
-  for (let index = 0; index < mineCount; ++index) {
+  for (let index = 0; index < chosenMineCount; ++index) {
     const rand = Math.floor(Math.random() * gridArrayEmpty.length);
 
     // Remove the node from the empty list
     const node = gridArrayEmpty.splice(rand, 1);
     gridArrayMined.push(node[0]);
   }
-
-  createHintNumbers();
-}
-
-/* Extract digits from string using regexp, and rejoin the
-the digits to a string, excluding the commas. */
-function extractIDFromString(idString) {
-  return idString.match(/[0-9]/g).join("");
 }
 
 function getNeighborNodes(index) {
@@ -184,13 +254,15 @@ function init() {
   });
 
   // Set the menu to active on click
-  menuBtn.addEventListener('click', (e) => {
+  menuBtn.addEventListener('click', () => {
     let menu = document.getElementById('minesweeper-menu');
     if (menuBtn.classList.contains('active')) {
       menu.classList.remove('active');
       menuBtn.classList.remove('active');
       
       // Remove active class from child menus.
+      difficultyBtn.classList.remove('active');
+      difficultyMenu.classList.remove('active');
       gridSizeBtn.classList.remove('active');
       gridSizeMenu.classList.remove('active');
     } else {
@@ -199,8 +271,11 @@ function init() {
     }
   });
 
-  // Set the grid size menu active on click
+  // Set the grid size menu active on click.
   gridSizeBtn.addEventListener('click', () => {
+    difficultyBtn.classList.remove('active');
+    difficultyMenu.classList.remove('active');
+
     if (gridSizeBtn.classList.contains('active')) {
       gridSizeBtn.classList.remove('active');
       gridSizeMenu.classList.remove('active');
@@ -210,7 +285,42 @@ function init() {
     }
   });
 
-  createGrid(gridWidth, gridHeight, chosenMineCount);
+  // Set the grid size buttons click callbacks
+  gridSizeSmallBtn.addEventListener('click', () => setGridSize('small'));
+  gridSizeMediumBtn.addEventListener('click', () => setGridSize('medium'));
+  gridSizeLargeBtn.addEventListener('click', () => setGridSize('large'));
+
+  // Set the game difficulty menu active on click.
+  difficultyBtn.addEventListener('click', () => {
+    gridSizeBtn.classList.remove('active');
+    gridSizeMenu.classList.remove('active');
+
+    if (difficultyBtn.classList.contains('active')) {
+      difficultyBtn.classList.remove('active');
+      difficultyMenu.classList.remove('active');
+    } else {
+      difficultyBtn.classList.add('active');
+      difficultyMenu.classList.add('active');
+    }
+  });
+
+  // Set the difficulty buttons click callbacks
+  difficultyEasyBtn.addEventListener('click', () => setDifficulty('easy'));
+  difficultyMediumBtn.addEventListener('click', () => setDifficulty('medium'));
+  difficultyHardBtn.addEventListener('click', () => setDifficulty('hard'));
+
+  // Set the Github link to 'beat' when moused over.
+  let githubLink = document.getElementById('minesweeper-github');
+  githubLink.addEventListener('mouseenter', () => {
+    githubLink.classList.add('fa-beat');
+  });
+
+  githubLink.addEventListener('mouseleave', () => {
+    githubLink.classList.remove('fa-beat');
+  });
+
+  // Create the default size grid.
+  createGrid();
 }
 
 function onNodeClick(node, index) {
@@ -227,66 +337,64 @@ function onNodeClick(node, index) {
 
   // If a mine was uncovered, game over.
   if (gridArrayMined.indexOf(index) != -1) {
-    clearGrid();
+    // Create a new grid with the previous dimensions
+    createGrid();
     return;
   }
 
   checkForMines(index);
 }
 
-function checkForMines(index) {
-  const checkedNodes = [];
-  const uncheckedNodes = [index];
-
-  let iteration = 0;
-  while (uncheckedNodes.length > 0 && iteration < 100) {
-    // Get valid, neighboring nodes
-    const neighborArray = getNeighborNodes(uncheckedNodes[0]);
-
-    // Determine how many neighbors contain mines.
-    let neighboringMines = 0;
-    for (let count = 0; count < neighborArray.length; count++) {
-      if (gridArrayMined.indexOf(neighborArray[count]) != -1) {
-        neighboringMines++;
-      }
-    }
-
-    // Grab a reference to the current node.
-    const currentNode = document
-      .getElementById(`grid-node-${uncheckedNodes[0]}`);
-    
-    currentNode.classList.add('clicked');
-    currentNode.onclick = 0;
-
-    /* If node has any neighboring mines, display the number of
-    neighboring mines, and do not add neighbors to uncheckedNodes.
-    Otherwise, show an empty tile as clicked. */
-    if (neighboringMines != 0) {
-      currentNode.querySelector('div').textContent = neighboringMines;
-      
-      // Return if the is the original node clicked.
-      if (index == uncheckedNodes[0]) {
-        return;
-      }
-    } else {
-      /* If node does not have any mines for neighbors, check all of
-      its neighboring nodes, making sure not to add a node that has
-      already been evaluated, or marked for evaluation, to either list. */
-      for (let i = 0; i < neighborArray.length; ++i) {
-        const value = neighborArray[i];
-        if (checkedNodes.indexOf(value) === -1) {
-          if (uncheckedNodes.indexOf(value) === -1) {
-            uncheckedNodes.push(value);
-          }
-        }
-      }
-    }
-
-    // Move the current node to the checked list.
-    checkedNodes.push(uncheckedNodes.shift());
-
-    iteration++;
+function setDifficulty(difficultyString) {
+  if (difficultyCurrent == difficultyString) {
+    return;
   }
+
+  difficultyCurrent = difficultyString;
+
+  difficultyEasyBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
+  difficultyMediumBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
+  difficultyHardBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
+
+  switch(difficultyCurrent) {
+    case 'easy':
+      difficultyEasyBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
+      break;
+    case 'medium':
+      difficultyMediumBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
+      break;
+    case 'hard':
+      difficultyHardBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
+      break;
+  }
+
+  createGrid()
+}
+
+function setGridSize(gridSizeString) {
+  if (gridSizeString === gridSizeCurrent) {
+    return;
+  }
+
+  gridSizeCurrent = gridSizeString;
+
+  gridSizeSmallBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
+  gridSizeMediumBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
+  gridSizeLargeBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
+
+  switch(gridSizeString) {
+    case 'small':
+      gridSizeSmallBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
+      break;
+    case 'medium':
+      gridSizeMediumBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
+      break;
+    case 'large':
+      gridSizeLargeBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
+      break;
+  }
+
+  createGrid()
 }
 
 init();
