@@ -30,28 +30,26 @@ let gridSize = 0;
 let gridSizeCurrent = 'medium';
 let difficultyCurrent = 'medium';
 
-function checkForMines(index) {
+function searchForNearbyMines(index) {
   const checkedNodes = [];
   const uncheckedNodes = [index];
 
+  // Prevent getting stuck in loop if logic fails.
   let iteration = 0;
-  while (uncheckedNodes.length > 0 && iteration < 100) {
+  const maxIterations = 1000;
+  while (uncheckedNodes.length > 0 && iteration < 1000) {
     // Get valid, neighboring nodes
     const neighborArray = getNeighborNodes(uncheckedNodes[0]);
 
     // Determine how many neighbors contain mines.
-    let neighboringMines = 0;
-    for (let count = 0; count < neighborArray.length; count++) {
-      if (gridArrayMined.indexOf(neighborArray[count]) != -1) {
-        neighboringMines++;
-      }
-    }
+    let neighboringMines = getNeighboringMinesCount(neighborArray);
 
     // Grab a reference to the current node.
     const currentNode = document
       .getElementById(`grid-node-${uncheckedNodes[0]}`);
-    
+    // Set the node to 'clicked'.
     currentNode.classList.add('clicked');
+    // Remove the node's onclick function.
     currentNode.onclick = 0;
 
     /* If node has any neighboring mines, display the number of
@@ -146,7 +144,7 @@ function createGrid() {
 }
 
 function createMines() {
-  // Determin total mine count from grid size and difficulty.
+  // Determine total mine count from grid size and difficulty.
   switch(difficultyCurrent) {
     case 'easy':
       chosenMineCount = Math.floor(gridSize * 0.15);
@@ -171,6 +169,8 @@ function createMines() {
   // Update GUI for mine and flag count.
   guiCounterMines.innerText = chosenMineCount;
   guiCounterFlags.innerText = chosenMineCount;
+  // Reset the flags placed counter.
+  flagsPlaced = 0;
 }
 
 function getNeighborNodes(index) {
@@ -247,6 +247,18 @@ function getNeighborNodes(index) {
   }
 
   return neighborArray;
+}
+
+// Search an array of neighboring nodes for total number of mines.
+function getNeighboringMinesCount(neighborArray) {
+  let neighboringMines = 0;
+  for (let count = 0; count < neighborArray.length; count++) {
+    if (gridArrayMined.indexOf(neighborArray[count]) != -1) {
+      neighboringMines++;
+    }
+  }
+
+  return neighboringMines;
 }
 
 function init() {
@@ -373,7 +385,7 @@ function onNodeClick(node, index) {
     return;
   }
 
-  checkForMines(index);
+  searchForNearbyMines(index);
 }
 
 function setDifficulty(difficultyString) {
