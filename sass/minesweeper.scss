@@ -192,7 +192,7 @@ $minesweeper-border-style: $minesweeper-border-size $minesweeper-color-secondary
   }
 
   // The grid where the game is played
-  .grid {
+  .game-grid {
     flex-grow: 1;
     display: grid;
     font-size: 0.8rem;
