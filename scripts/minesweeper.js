@@ -13,6 +13,8 @@ const difficultyMenu = document.getElementById('difficulty-menu');
 const difficultyEasyBtn = document.getElementById('difficulty-easy');
 const difficultyMediumBtn = document.getElementById('difficulty-medium');
 const difficultyHardBtn = document.getElementById('difficulty-hard');
+// Timers
+const mineRevealDelay = 100;
 // GUI Counteers
 let guiCounterMines = document.getElementById('mine-count');
 let guiCounterFlags = document.getElementById('flag-count');
@@ -326,13 +328,25 @@ function init() {
     }
   });
 
-  // Set the difficulty buttons click callbacks
+  // Set the difficulty buttons click callbacks.
   difficultyEasyBtn.addEventListener('click', () => setDifficulty('easy'));
   difficultyMediumBtn.addEventListener('click', () => setDifficulty('medium'));
   difficultyHardBtn.addEventListener('click', () => setDifficulty('hard'));
 
+  // Set the Game Over menu buttons click callbacks.
+  document.getElementById('game-over-yes').addEventListener('click', () => {
+    createGrid();
+    document.getElementById('game-over-menu').style
+      .setProperty('display', 'none');
+  });
+
+  document.getElementById('game-over-no').addEventListener('click', () => {
+    document.getElementById('game-over-menu').style
+      .setProperty('display', 'none');
+  });
+
   // Set the Github link to 'beat' when moused over.
-  let githubLink = document.getElementById('minesweeper-github');
+  const githubLink = document.getElementById('minesweeper-github');
   githubLink.addEventListener('mouseenter', () => {
     githubLink.classList.add('fa-beat');
   });
@@ -375,17 +389,22 @@ function onNodeClick(node, index) {
 
   // If a mine was uncovered, game over.
   if (gridArrayMined.indexOf(index) != -1) {
-    minesweeper.classList.add('game-over');
-    setTimeout(() => {
-      minesweeper.classList.remove('game-over');
-    }, 500);
+    setGameOverState();
 
-    // Create a new grid with the previous dimensions
-    createGrid();
     return;
   }
 
   searchForNearbyMines(index);
+}
+
+function revealGameOverScreen() {
+  document.getElementById('game-over-menu').style.setProperty('display', 'flex');
+}
+
+function removeNodeOnClickEvents() {
+  grid.querySelectorAll('.grid-node').forEach(node => {
+    node.onclick = 0;
+  });
 }
 
 function setDifficulty(difficultyString) {
@@ -408,6 +427,41 @@ function setDifficulty(difficultyString) {
   }
 
   createGrid()
+}
+
+function setGameOverState() {
+  // Trigger the red flash of the mine blowing up.
+  minesweeper.classList.add('game-over');
+  // Set the timer for the red flash class to be removed.
+  setTimeout(() => {
+    minesweeper.classList.remove('game-over');
+  }, 500);
+
+  // Create the mine icon to place within mined nodes.
+  let mineIcon = document.createElement('i');
+  mineIcon.classList.add('fa-solid', 'fa-land-mine-on');
+
+  removeNodeOnClickEvents();
+
+  // Iterate through all mined nodes with a delay.
+  let iterator = 0
+  const mineIconRevealerID = setInterval(() => {
+    const node = document.getElementById(`grid-node-${gridArrayMined[iterator]}`)
+    .querySelector('div');
+    node.appendChild(mineIcon.cloneNode());
+    node.style.setProperty('background', 'red');
+    
+    // Once we have iterated through all mines, clear the timer interval.
+    iterator++;
+    if (iterator >= gridArrayMined.length) {
+      clearInterval(mineIconRevealerID);
+      
+      // Set a delay before the game over screen appears.
+      setTimeout(() => {
+        revealGameOverScreen();
+      }, 2000);
+    }
+  }, mineRevealDelay, iterator);
 }
 
 function setGridSize(gridSizeString) {
