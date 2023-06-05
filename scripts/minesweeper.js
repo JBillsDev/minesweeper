@@ -1,23 +1,7 @@
-const minesweeper = document.getElementById('minesweeper');
-const grid = minesweeper.querySelector('.grid');
-const menuBtn = document.getElementById('minesweeper-menu-btn');
-// Grid Size Elements
-const gridSizeBtn = document.getElementById('grid-size-btn');
-const gridSizeMenu = document.getElementById('grid-size-menu');
-const gridSizeSmallBtn = document.getElementById('grid-size-small');
-const gridSizeMediumBtn = document.getElementById('grid-size-medium');
-const gridSizeLargeBtn = document.getElementById('grid-size-large');
-// Difficulty Elements
-const difficultyBtn = document.getElementById('difficulty-btn');
-const difficultyMenu = document.getElementById('difficulty-menu');
-const difficultyEasyBtn = document.getElementById('difficulty-easy');
-const difficultyMediumBtn = document.getElementById('difficulty-medium');
-const difficultyHardBtn = document.getElementById('difficulty-hard');
-// Timers
+// Timers and Delays
+let gameOverTimeoutID = 0;
+let mineRevealerIntervalID = 0;
 const mineRevealDelay = 100;
-// GUI Counteers
-let guiCounterMines = document.getElementById('mine-count');
-let guiCounterFlags = document.getElementById('flag-count');
 
 let gridArrayEmpty = [];
 let gridArrayMined = [];
@@ -32,69 +16,44 @@ let gridSize = 0;
 let gridSizeCurrent = 'medium';
 let difficultyCurrent = 'medium';
 
-function searchForNearbyMines(index) {
-  const checkedNodes = [];
-  const uncheckedNodes = [index];
-
-  // Prevent getting stuck in loop if logic fails.
-  let iteration = 0;
-  const maxIterations = 1000;
-  while (uncheckedNodes.length > 0 && iteration < 1000) {
-    // Get valid, neighboring nodes
-    const neighborArray = getNeighborNodes(uncheckedNodes[0]);
-
-    // Determine how many neighbors contain mines.
-    let neighboringMines = getNeighboringMinesCount(neighborArray);
-
-    // Grab a reference to the current node.
-    const currentNode = document
-      .getElementById(`grid-node-${uncheckedNodes[0]}`);
-    // Set the node to 'clicked'.
-    currentNode.classList.add('clicked');
-    // Remove the node's onclick function.
-    currentNode.onclick = 0;
-
-    /* If node has any neighboring mines, display the number of
-    neighboring mines, and do not add neighbors to uncheckedNodes.
-    Otherwise, show an empty tile as clicked. */
-    if (neighboringMines != 0) {
-      currentNode.querySelector('div').textContent = neighboringMines;
-      
-      // Return if the is the original node clicked.
-      if (index == uncheckedNodes[0]) {
-        return;
-      }
-    } else {
-      /* If node does not have any mines for neighbors, check all of
-      its neighboring nodes, making sure not to add a node that has
-      already been evaluated, or marked for evaluation, to either list. */
-      for (let i = 0; i < neighborArray.length; ++i) {
-        const value = neighborArray[i];
-        if (checkedNodes.indexOf(value) === -1) {
-          if (uncheckedNodes.indexOf(value) === -1) {
-            uncheckedNodes.push(value);
-          }
-        }
-      }
-    }
-
-    // Move the current node to the checked list.
-    checkedNodes.push(uncheckedNodes.shift());
-
-    iteration++;
-  }
-}
-
 function clearGrid() {
   // Clear the empty and mined arrays
   gridArrayEmpty = [];
   gridArrayMined = [];
 
   // Clear the nodes from the grid
-  grid.innerHTML = '';
+  document.getElementById('game-grid').innerHTML = '';
+}
+
+function closeDifficultyMenu() {
+  document.getElementById('difficulty-btn').classList.remove('active');
+  document.getElementById('difficulty-menu').classList.remove('active');
+}
+
+// Close all menus open in the main hamburger menu.
+function closeFullMenu() {
+  closeDifficultyMenu();
+  closeGridSizeMenu();
+  closeHamburgerMenu();
+}
+
+function closeGridSizeMenu() {
+  document.getElementById('grid-size-btn').classList.remove('active');
+  document.getElementById('grid-size-menu').classList.remove('active');
+}
+
+function closeHamburgerMenu() {
+  document.getElementById('minesweeper-menu-btn').classList
+    .remove('active');
+  document.getElementById('minesweeper-menu').classList
+    .remove('active');
 }
 
 function createGrid() {
+  // Clear any existing interval
+  clearInterval(mineRevealerIntervalID);
+  clearTimeout(gameOverTimeoutID);
+
   // Clear the existing grid.
   clearGrid();
   
@@ -113,8 +72,12 @@ function createGrid() {
   gridHeight = Math.floor(gridWidth * 1.5);
   gridSize = gridWidth * gridHeight;
 
-  grid.style.gridTemplateColumns = `repeat(${gridWidth}, 1fr)`;
-  grid.style.gridTemplateRows = `repeat(${gridHeight}, 1fr)`;
+  // Grab reference to game grid
+  const gameGrid = document.getElementById('game-grid');
+
+  // Set the CSS grid dimensions
+  gameGrid.style.gridTemplateColumns = `repeat(${gridWidth}, 1fr)`;
+  gameGrid.style.gridTemplateRows = `repeat(${gridHeight}, 1fr)`;
 
   let index = 0;
   for (let y = 0; y < gridHeight; ++y) {
@@ -135,7 +98,7 @@ function createGrid() {
 
       // Append nodes
       node.appendChild(nodeInner);
-      grid.appendChild(node);
+      gameGrid.appendChild(node);
 
       gridArrayEmpty.push(index);
       index++;
@@ -169,8 +132,8 @@ function createMines() {
   }
 
   // Update GUI for mine and flag count.
-  guiCounterMines.innerText = chosenMineCount;
-  guiCounterFlags.innerText = chosenMineCount;
+  document.getElementById('mine-count').innerText = chosenMineCount;
+  document.getElementById('flag-count').innerText = chosenMineCount;
   // Reset the flags placed counter.
   flagsPlaced = 0;
 }
@@ -277,61 +240,92 @@ function init() {
     }
   });
 
-  // Set the menu to active on click
-  menuBtn.addEventListener('click', () => {
-    let menu = document.getElementById('minesweeper-menu');
+  // Set the menu to active or inactive on click.
+  document.getElementById('minesweeper-menu-btn')
+    .addEventListener('click', () => {
+    const menuBtn = document.getElementById('minesweeper-menu-btn');
     if (menuBtn.classList.contains('active')) {
-      menu.classList.remove('active');
-      menuBtn.classList.remove('active');
-      
-      // Remove active class from child menus.
-      difficultyBtn.classList.remove('active');
-      difficultyMenu.classList.remove('active');
-      gridSizeBtn.classList.remove('active');
-      gridSizeMenu.classList.remove('active');
+      closeFullMenu();
     } else {
-      menu.classList.add('active');
+      document.getElementById('minesweeper-menu')
+        .classList.add('active');
       menuBtn.classList.add('active');
     }
   });
 
   // Set the grid size menu active on click.
-  gridSizeBtn.addEventListener('click', () => {
-    difficultyBtn.classList.remove('active');
-    difficultyMenu.classList.remove('active');
+  document.getElementById('grid-size-btn')
+    .addEventListener('click', () => {
+    // Make sure difficulty menu is not open at the same time.
+    closeDifficultyMenu();
 
+    const gridSizeBtn = document.getElementById('grid-size-btn');
     if (gridSizeBtn.classList.contains('active')) {
-      gridSizeBtn.classList.remove('active');
-      gridSizeMenu.classList.remove('active');
+      closeGridSizeMenu();
     } else {
       gridSizeBtn.classList.add('active');
-      gridSizeMenu.classList.add('active');
+      document.getElementById('grid-size-menu').classList.add('active');
     }
   });
 
   // Set the grid size buttons click callbacks
-  gridSizeSmallBtn.addEventListener('click', () => setGridSize('small'));
-  gridSizeMediumBtn.addEventListener('click', () => setGridSize('medium'));
-  gridSizeLargeBtn.addEventListener('click', () => setGridSize('large'));
+  document.getElementById('grid-size-small')
+    .addEventListener('click', () => {
+    setGridSize('small');
+    createGrid();
+    closeFullMenu();
+  });
+
+  document.getElementById('grid-size-medium')
+    .addEventListener('click', () => {
+    setGridSize('medium');
+    createGrid();
+    closeFullMenu();
+  });
+
+  document.getElementById('grid-size-large')
+    .addEventListener('click', () => {
+    setGridSize('large');
+    createGrid();
+    closeFullMenu();
+  });
 
   // Set the game difficulty menu active on click.
-  difficultyBtn.addEventListener('click', () => {
-    gridSizeBtn.classList.remove('active');
-    gridSizeMenu.classList.remove('active');
+  document.getElementById('difficulty-btn')
+    .addEventListener('click', () => {
+    // Make sure grid size menu is not open at the same time.
+    closeGridSizeMenu();
 
+    const difficultyBtn = document.getElementById('difficulty-btn');
     if (difficultyBtn.classList.contains('active')) {
-      difficultyBtn.classList.remove('active');
-      difficultyMenu.classList.remove('active');
+      closeDifficultyMenu();
     } else {
       difficultyBtn.classList.add('active');
-      difficultyMenu.classList.add('active');
+      document.getElementById('difficulty-menu').classList.add('active');
     }
   });
 
   // Set the difficulty buttons click callbacks.
-  difficultyEasyBtn.addEventListener('click', () => setDifficulty('easy'));
-  difficultyMediumBtn.addEventListener('click', () => setDifficulty('medium'));
-  difficultyHardBtn.addEventListener('click', () => setDifficulty('hard'));
+  document.getElementById('difficulty-easy')
+    .addEventListener('click', () => {
+    setDifficulty('easy');
+    createGrid();
+    closeFullMenu();
+  });
+
+  document.getElementById('difficulty-medium')
+    .addEventListener('click', () => {
+    setDifficulty('medium');
+    createGrid();
+    closeFullMenu();
+  });
+
+  document.getElementById('difficulty-hard')
+    .addEventListener('click', () => {
+    setDifficulty('hard');
+    createGrid();
+    closeFullMenu();
+  });
 
   // Set the Game Over menu buttons click callbacks.
   document.getElementById('game-over-yes').addEventListener('click', () => {
@@ -402,18 +396,79 @@ function revealGameOverScreen() {
 }
 
 function removeNodeOnClickEvents() {
-  grid.querySelectorAll('.grid-node').forEach(node => {
+  document.getElementById('game-grid').querySelectorAll('.grid-node')
+    .forEach(node => {
     node.onclick = 0;
   });
+}
+
+function searchForNearbyMines(index) {
+  const checkedNodes = [];
+  const uncheckedNodes = [index];
+
+  // Prevent getting stuck in loop if logic fails.
+  let iteration = 0;
+  const maxIterations = 1000;
+  while (uncheckedNodes.length > 0 && iteration < 1000) {
+    // Get valid, neighboring nodes
+    const neighborArray = getNeighborNodes(uncheckedNodes[0]);
+
+    // Determine how many neighbors contain mines.
+    let neighboringMines = getNeighboringMinesCount(neighborArray);
+
+    // Grab a reference to the current node.
+    const currentNode = document
+      .getElementById(`grid-node-${uncheckedNodes[0]}`);
+    // Set the node to 'clicked'.
+    currentNode.classList.add('clicked');
+    // Remove the node's onclick function.
+    currentNode.onclick = 0;
+
+    /* If node has any neighboring mines, display the number of
+    neighboring mines, and do not add neighbors to uncheckedNodes.
+    Otherwise, show an empty tile as clicked. */
+    if (neighboringMines != 0) {
+      currentNode.querySelector('div').textContent = neighboringMines;
+      
+      // Return if the is the original node clicked.
+      if (index == uncheckedNodes[0]) {
+        return;
+      }
+    } else {
+      /* If node does not have any mines for neighbors, check all of
+      its neighboring nodes, making sure not to add a node that has
+      already been evaluated, or marked for evaluation, to either list. */
+      for (let i = 0; i < neighborArray.length; ++i) {
+        const value = neighborArray[i];
+        if (checkedNodes.indexOf(value) === -1) {
+          if (uncheckedNodes.indexOf(value) === -1) {
+            uncheckedNodes.push(value);
+          }
+        }
+      }
+    }
+
+    // Move the current node to the checked list.
+    checkedNodes.push(uncheckedNodes.shift());
+
+    iteration++;
+  }
 }
 
 function setDifficulty(difficultyString) {
   difficultyCurrent = difficultyString;
 
+  // Get difficulty button elements.
+  const difficultyEasyBtn = document.getElementById('difficulty-easy');
+  const difficultyMediumBtn = document.getElementById('difficulty-medium');
+  const difficultyHardBtn = document.getElementById('difficulty-hard');
+  
+  // Remove the existing check mark.
   difficultyEasyBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
   difficultyMediumBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
   difficultyHardBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
 
+  // Add the check mark to the newly selected difficulty.
   switch(difficultyCurrent) {
     case 'easy':
       difficultyEasyBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
@@ -425,11 +480,11 @@ function setDifficulty(difficultyString) {
       difficultyHardBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
       break;
   }
-
-  createGrid()
 }
 
 function setGameOverState() {
+  const minesweeper = document.getElementById('minesweeper');
+
   // Trigger the red flash of the mine blowing up.
   minesweeper.classList.add('game-over');
   // Set the timer for the red flash class to be removed.
@@ -445,19 +500,25 @@ function setGameOverState() {
 
   // Iterate through all mined nodes with a delay.
   let iterator = 0
-  const mineIconRevealerID = setInterval(() => {
+  mineRevealerIntervalID = setInterval(() => {
     const node = document.getElementById(`grid-node-${gridArrayMined[iterator]}`)
-    .querySelector('div');
-    node.appendChild(mineIcon.cloneNode());
+      .querySelector('div');
+    
+    // Turn all mined nodes red.
     node.style.setProperty('background', 'red');
+    
+    // Add the mine icon if it was not flagged.
+    if (node.querySelector('i') == null) {
+      node.appendChild(mineIcon.cloneNode());
+    }
     
     // Once we have iterated through all mines, clear the timer interval.
     iterator++;
     if (iterator >= gridArrayMined.length) {
-      clearInterval(mineIconRevealerID);
+      clearInterval(mineRevealerIntervalID);
       
       // Set a delay before the game over screen appears.
-      setTimeout(() => {
+      gameOverTimeoutID = setTimeout(() => {
         revealGameOverScreen();
       }, 2000);
     }
@@ -467,33 +528,42 @@ function setGameOverState() {
 function setGridSize(gridSizeString) {
   gridSizeCurrent = gridSizeString;
 
+  // Get grid size button elements.
+  const gridSizeSmallBtn = document.getElementById('grid-size-small');
+  const gridSizeMediumBtn = document.getElementById('grid-size-medium');
+  const gridSizeLargeBtn = document.getElementById('grid-size-large');
+
+  // Remove the existing check mark.
   gridSizeSmallBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
   gridSizeMediumBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
   gridSizeLargeBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
 
+  // Grab reference to game grid
+  const gameGrid = document.getElementById('game-grid');
+
+  /* Add the check mark to the newly selected grid size, and update the
+  relevant grid display properties to adapt to the new node size. */
   switch(gridSizeString) {
     case 'small':
       gridSizeSmallBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
-      grid.style.setProperty('font-size', '2rem');
-      grid.style.setProperty('padding-top', '5px');
+      gameGrid.style.setProperty('font-size', '2rem');
+      gameGrid.style.setProperty('padding-top', '5px');
       break;
     case 'medium':
       gridSizeMediumBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
-      grid.style.setProperty('font-size', '1.2rem');
-      grid.style.setProperty('padding-top', '3px');
+      gameGrid.style.setProperty('font-size', '1.2rem');
+      gameGrid.style.setProperty('padding-top', '3px');
       break;
     case 'large':
       gridSizeLargeBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
-      grid.style.setProperty('font-size', '0.8rem');
-      grid.style.setProperty('padding-top', '-3px');
+      gameGrid.style.setProperty('font-size', '0.8rem');
+      gameGrid.style.setProperty('padding-top', '-3px');
       break;
   }
-
-  createGrid()
 }
 
 function updateFlagsCount() {
-  guiCounterFlags.innerText = chosenMineCount - flagsPlaced;
+  document.getElementById('flag-count').innerText = chosenMineCount - flagsPlaced;
 }
 
 init();
