@@ -19,14 +19,19 @@
         <p id="game-over-no" class="raised-btn">No</p>
       </div>
     </div>
+    <div id="info-menu">
+      
+    </div>
     <header>
       <a href="https://github.com/JBillsDev/minesweeper" target="_blank"><i id="minesweeper-github" class="fa-brands fa-github fa-xl"></i></a>
       <h1>Minesweeper</h1>
       <i id="minesweeper-menu-btn" class="fa-solid fa-bars fa-lg"></i>
       <div>
         <ul id="minesweeper-menu">
+          <li id="info-btn"><i class="fa-solid fa-circle-info"></i> <p>Info</p></li>
           <li id="grid-size-btn"><i class="fa-solid fa-chevron-left"></i> <p>Grid Size</p></li>
           <li id="difficulty-btn"><i class="fa-solid fa-chevron-left"></i> <p>Difficulty</p></li>
+          <li id="new-game-btn"><i class="fa-solid fa-play"></i> <p>New Game</p></li>
         </ul>
         <ul id="grid-size-menu">
           <li id="grid-size-small"><i></i><p>Small</p></li>
@@ -53,6 +58,6 @@
     </footer>
   </section>
 
-  <script src="scripts/minesweeper.js"></script>
+  <script type="module" src="scripts/minesweeper.js"></script>
 </body>
 </html>
