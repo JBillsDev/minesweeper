@@ -108,8 +108,13 @@
       return;
     }
 
+    const mineIndex = module.gridArrayMined.indexOf(index);
     // If a mine was uncovered, game over.
-    if (module.gridArrayMined.indexOf(index) != -1) {
+    if (mineIndex != -1) {
+      /* Place the mined node the player clicked on at the front
+      of the mined nodes array. */
+      module.gridArrayMined.unshift(module.gridArrayMined.splice(mineIndex, 1)[0]);
+
       module.setGameOverState();
 
       return;
@@ -121,9 +126,13 @@
     module.checkForWinCondition();
   }
 
-  module.removeNodeOnClickEvents = function () {
+  module.removeNodeInteractions = function () {
     document.getElementById('game-grid').querySelectorAll('.grid-node')
       .forEach(node => {
+      // Prevent the nodes from animating when hovered over.
+      node.querySelector('div').classList.add('frozen');
+
+      // Remove the onclick callback.
       node.onclick = 0;
     });
   }

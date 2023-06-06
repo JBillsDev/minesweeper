@@ -35,11 +35,12 @@
       minesweeper.classList.remove('game-over');
     }, 500);
   
+    // Prevent further nodes from being interacted with.
+    module.removeNodeInteractions();
+  
     // Create the mine icon to place within mined nodes.
     let mineIcon = document.createElement('i');
     mineIcon.classList.add('fa-solid', 'fa-land-mine-on');
-  
-    module.removeNodeOnClickEvents();
   
     // Iterate through all mined nodes with a delay.
     let iterator = 0
@@ -50,8 +51,16 @@
       // Turn all mined nodes red.
       node.style.setProperty('background', 'red');
       
-      // Add the mine icon if it was not flagged.
-      if (node.querySelector('i') == null) {
+      if (iterator == 0) {
+        // Add the explosion icon if it was the node the player clicked on.
+        const explosion = document.createElement('i');
+        explosion.classList.add('fa-solid', 'fa-explosion');
+        node.appendChild(explosion);
+        node.style.setProperty('background', '#333');
+        node.style.setProperty('color', 'red');
+        node.style.setProperty('border', '4px #999 solid');
+      }else if (node.querySelector('i') == null) {
+        // Add the mine icon if it was not flagged.
         node.appendChild(mineIcon.cloneNode());
       }
       
