@@ -22,6 +22,10 @@
     document.getElementById('minesweeper-menu').classList
       .remove('active');
   }
+
+  module.displayInfo = function () {
+    document.getElementById('info-menu').style.setProperty('display', 'flex');
+  }
   
   module.setDifficultyMenuCallbacks = function () {
     // Set the game difficulty menu active on click.
@@ -101,6 +105,14 @@
     });
   }
 
+  module.setInfoMenuCallbacks = function() {
+    document.getElementById('info-btn-ok')
+      .addEventListener('click', () => {
+        document.getElementById('info-menu').style
+          .setProperty('display', 'none');
+      });
+  }
+
   module.setMenuCallbacks = function () {
     // Set the menu to active or inactive on click.
     document.getElementById('minesweeper-menu-btn')
@@ -122,6 +134,13 @@
         // Close open menus
         module.closeFullMenu();
         module.startNewGame();
+    });
+    
+    document.getElementById('info-btn')
+      .addEventListener('click', () => {
+      module.closeFullMenu();
+      module.closeGameEndMenus();
+      module.displayInfo();
     });
   }
 

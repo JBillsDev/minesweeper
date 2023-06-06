@@ -43,12 +43,14 @@
     document.addEventListener('keydown', (e) => {
       if (e.key === "Control") {
         module.flagPlacementEnabled = true;
+        document.getElementById('game-grid').classList.add('flag-cursor');
       }
     });
 
     document.addEventListener('keyup', (e) => {
       if (e.key === "Control") {
         module.flagPlacementEnabled = false;
+        document.getElementById('game-grid').classList.remove('flag-cursor');
       }
     });
   }

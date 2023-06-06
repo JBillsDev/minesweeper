@@ -1,6 +1,11 @@
 (function (module) {
   module.gameOverTimeoutID = 0;
 
+  module.closeGameEndMenus = function () {
+    module.revealGameOverMenu(false);
+    module.revealWinMenu(false);
+  }
+
   module.revealGameOverMenu = function (enable) {
     const value = (enable ? 'flex' : 'none');
     document.getElementById('game-over-menu').style.setProperty('display', value);
@@ -15,12 +20,12 @@
   module.setGameOverCallbacks = function () {
     const gameOverMenu = document.getElementById('game-over-menu');
 
-    gameOverMenu.querySelector('.game-end-yes').addEventListener('click', () => {
+    gameOverMenu.querySelector('.game-btn-yes').addEventListener('click', () => {
       module.startNewGame();
       gameOverMenu.style.setProperty('display', 'none');
     });
 
-    gameOverMenu.querySelector('.game-end-no').addEventListener('click', () => {
+    gameOverMenu.querySelector('.game-btn-no').addEventListener('click', () => {
       gameOverMenu.style.setProperty('display', 'none');
     });
   }
@@ -81,18 +86,18 @@
   module.setGameWinCallbacks = function () {
     const gameWinMenu = document.getElementById('win-menu');
     
-    gameWinMenu.querySelector('.game-end-yes').addEventListener('click', () => {
+    gameWinMenu.querySelector('.game-btn-yes').addEventListener('click', () => {
       module.startNewGame();
       gameWinMenu.style.setProperty('display', 'none');
     });
 
-    gameWinMenu.querySelector('.game-end-no').addEventListener('click', () => {
+    gameWinMenu.querySelector('.game-btn-no').addEventListener('click', () => {
       gameWinMenu.style.setProperty('display', 'none');
     });
   }
 
   module.setGameWinState = function () {
-    module.removeNodeOnClickEvents();
+    module.removeNodeInteractions();
     module.revealWinMenu(true);
   }
 
