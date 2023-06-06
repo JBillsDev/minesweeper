@@ -11,16 +11,33 @@
 </head>
 <body>
   <section id="minesweeper">
-    <div id="game-over-menu">
-      <h2>Game Over</h2>
-      <p>Play again?</p>
-      <div id="game-over-buttons">
-        <p id="game-over-yes" class="raised-btn">Yes</p>
-        <p id="game-over-no" class="raised-btn">No</p>
+    <div id="info-menu" class="floating-menu">
+      <h2>Place Flag</h2>
+      <hr>
+      <p>
+        Holding down the <span class="highlight">'Control'</span> key will allow you to place
+        flags.
+      </p>
+      <hr>
+      <div id="info-buttons" class="game-buttons">
+        <p id="info-btn-ok" class="game-btn-yes raised-btn ">Ok</p>
       </div>
     </div>
-    <div id="info-menu">
-      
+    <div id="win-menu" class="floating-menu">
+      <h2>You Win!</h2>
+      <p>Play again?</p>
+      <div id="game-win-buttons" class="game-buttons">
+        <p class="game-btn-yes raised-btn">Yes</p>
+        <p class="game-btn-no raised-btn">No</p>
+      </div>
+    </div>
+    <div id="game-over-menu" class="floating-menu">
+      <h2>Game Over</h2>
+      <p>Play again?</p>
+      <div id="game-btn-buttons" class="game-buttons">
+        <p class="game-btn-yes raised-btn ">Yes</p>
+        <p class="game-btn-no raised-btn">No</p>
+      </div>
     </div>
     <header>
       <a href="https://github.com/JBillsDev/minesweeper" target="_blank"><i id="minesweeper-github" class="fa-brands fa-github fa-xl"></i></a>
@@ -28,10 +45,10 @@
       <i id="minesweeper-menu-btn" class="fa-solid fa-bars fa-lg"></i>
       <div>
         <ul id="minesweeper-menu">
-          <li id="info-btn"><i class="fa-solid fa-circle-info"></i> <p>Info</p></li>
-          <li id="grid-size-btn"><i class="fa-solid fa-chevron-left"></i> <p>Grid Size</p></li>
-          <li id="difficulty-btn"><i class="fa-solid fa-chevron-left"></i> <p>Difficulty</p></li>
-          <li id="new-game-btn"><i class="fa-solid fa-play"></i> <p>New Game</p></li>
+          <li id="info-btn"><i class="fa-solid fa-circle-info fa-xl"></i> <p>Info</p></li>
+          <li id="grid-size-btn"><i class="fa-solid fa-chevron-left fa-xl"></i> <p>Grid Size</p></li>
+          <li id="difficulty-btn"><i class="fa-solid fa-chevron-left fa-xl"></i> <p>Difficulty</p></li>
+          <li id="new-game-btn"><i class="fa-solid fa-play fa-xl"></i> <p>New Game</p></li>
         </ul>
         <ul id="grid-size-menu">
           <li id="grid-size-small"><i></i><p>Small</p></li>
@@ -45,7 +62,7 @@
         </ul>
       </div>
     </header>
-    <div id="game-grid" class="game-grid"></div>
+    <div id="game-grid" class="game-grid crosshair"></div>
     <footer>
       <div>
         <p>Mines:</p>

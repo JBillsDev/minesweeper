@@ -44,7 +44,7 @@
 
     /* Add the check mark to the newly selected grid size, and update the
     relevant grid display properties to adapt to the new node size. */
-    switch(module.gridSizeString) {
+    switch(module.gridSizeCurrent) {
       case 'small':
         gridSizeSmallBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
         gameGrid.style.setProperty('font-size', '2rem');

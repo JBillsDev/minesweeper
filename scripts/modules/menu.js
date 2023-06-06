@@ -22,6 +22,10 @@
     document.getElementById('minesweeper-menu').classList
       .remove('active');
   }
+
+  module.displayInfo = function () {
+    document.getElementById('info-menu').style.setProperty('display', 'flex');
+  }
   
   module.setDifficultyMenuCallbacks = function () {
     // Set the game difficulty menu active on click.
@@ -43,21 +47,21 @@
     document.getElementById('difficulty-easy')
       .addEventListener('click', () => {
       module.setDifficulty('easy');
-      module.createGrid();
+      module.startNewGame();
       module.closeFullMenu();
     });
 
     document.getElementById('difficulty-medium')
       .addEventListener('click', () => {
       module.setDifficulty('medium');
-      module.createGrid();
+      module.startNewGame();
       module.closeFullMenu();
     });
 
     document.getElementById('difficulty-hard')
       .addEventListener('click', () => {
       module.setDifficulty('hard');
-      module.createGrid();
+      module.startNewGame();
       module.closeFullMenu();
     });
   }
@@ -82,23 +86,31 @@
     document.getElementById('grid-size-small')
       .addEventListener('click', () => {
       module.setGridSize('small');
-      module.createGrid();
+      module.startNewGame();
       module.closeFullMenu();
     });
 
     document.getElementById('grid-size-medium')
       .addEventListener('click', () => {
       module.setGridSize('medium');
-      module.createGrid();
+      module.startNewGame();
       module.closeFullMenu();
     });
 
     document.getElementById('grid-size-large')
       .addEventListener('click', () => {
       module.setGridSize('large');
-      module.createGrid();
+      module.startNewGame();
       module.closeFullMenu();
     });
+  }
+
+  module.setInfoMenuCallbacks = function() {
+    document.getElementById('info-btn-ok')
+      .addEventListener('click', () => {
+        document.getElementById('info-menu').style
+          .setProperty('display', 'none');
+      });
   }
 
   module.setMenuCallbacks = function () {
@@ -122,6 +134,13 @@
         // Close open menus
         module.closeFullMenu();
         module.startNewGame();
+    });
+    
+    document.getElementById('info-btn')
+      .addEventListener('click', () => {
+      module.closeFullMenu();
+      module.closeGameEndMenus();
+      module.displayInfo();
     });
   }
 

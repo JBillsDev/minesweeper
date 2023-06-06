@@ -4,28 +4,30 @@
   // Whether or not the player is holding the flag placement key down.
   module.flagPlacementEnabled = false;
 
-  module.placeFlag = function() {
+  module.placeFlag = function(node, value) {
     const child = node.querySelector('div');
 
     /* If flag placement is currently enabled, spend a flag
     to mark the node, and remove 1 from the GUI flag counter.
     Else, remove the flag marg, and return 1 flag. */
-    if (child.innerHTML === "") {
+    if (value) {
       // If no flags remaining, return.
       if (module.chosenMineCount - module.flagsPlaced <= 0) {
         return;
       }
 
-      child.innerHTML = `<i class="fa-regular fa-flag"></i>`
+      child.innerHTML = `<i class="fa-regular fa-flag"></i>`;
       module.flagsPlaced++;
       module.updateFlagsCount();
+      node.classList.add('flagged');
+
+      module.checkForWinCondition();
     } else {
       child.innerHTML = '';
       module.flagsPlaced--;
       module.updateFlagsCount();
+      node.classList.remove('flagged');
     }
-
-    return;
   }
 
   module.resetFlags = function() {
@@ -40,19 +42,22 @@
     // Register the control key as the flag-placement active-toggle.
     document.addEventListener('keydown', (e) => {
       if (e.key === "Control") {
-        flagPlacementEnabled = true;
+        module.flagPlacementEnabled = true;
+        document.getElementById('game-grid').classList.add('flag-cursor');
       }
     });
 
     document.addEventListener('keyup', (e) => {
       if (e.key === "Control") {
-        flagPlacementEnabled = false;
+        module.flagPlacementEnabled = false;
+        document.getElementById('game-grid').classList.remove('flag-cursor');
       }
     });
   }
 
   module.updateFlagsCount = function () {
-    document.getElementById('flag-count').innerText = chosenMineCount - flagsPlaced;
+    document.getElementById('flag-count').innerText =
+      module.chosenMineCount - module.flagsPlaced;
   }
   
   return module;

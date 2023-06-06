@@ -13,6 +13,7 @@
     // Clear the empty and mined arrays
     module.gridArrayEmpty = [];
     module.gridArrayMined = [];
+    module.gridArrayRevealed = [];
 
     // Clear the nodes from the grid
     document.getElementById('game-grid').innerHTML = '';

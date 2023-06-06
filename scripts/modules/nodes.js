@@ -1,4 +1,16 @@
 (function (module) {
+  // Search an array of neighboring nodes for total number of mines.
+  module.getNeighboringMinesCount = function (neighborArray) {
+    let neighboringMines = 0;
+    for (let count = 0; count < neighborArray.length; count++) {
+      if (module.gridArrayMined.indexOf(neighborArray[count]) != -1) {
+        neighboringMines++;
+      }
+    }
+
+    return neighboringMines;
+  }
+
   module.getNeighborNodes = function (index) {
     const neighborArray = [];
 
@@ -77,37 +89,52 @@
 
   // Callback function for grid nodes being clicked.
   module.onNodeClick = function (node, index) {
+    // Place or remove flag if flag placement is enabled.
     if (module.flagPlacementEnabled) {
-      module.placeFlag();
+      if (node.classList.contains('flagged')) {
+        module.placeFlag(node, false);
+      } else {
+        module.placeFlag(node, true);
+      }
+
+      return;
+    }
+    
+    /* If flag placement is not enabled, but a flag exists,
+    remove the flag instead of revealing the node. */
+    if (node.classList.contains('flagged')) {
+      module.placeFlag(node, false);
+
+      return;
     }
 
+    const mineIndex = module.gridArrayMined.indexOf(index);
     // If a mine was uncovered, game over.
-    if (module.gridArrayMined.indexOf(index) != -1) {
+    if (mineIndex != -1) {
+      /* Place the mined node the player clicked on at the front
+      of the mined nodes array. */
+      module.gridArrayMined.unshift(module.gridArrayMined.splice(mineIndex, 1)[0]);
+
       module.setGameOverState();
 
       return;
     }
 
+    // Search valid nodes
     module.searchForNearbyMines(index);
+    // Check if all non-mined tiles have been revealed.
+    module.checkForWinCondition();
   }
 
-  module.removeNodeOnClickEvents = function () {
+  module.removeNodeInteractions = function () {
     document.getElementById('game-grid').querySelectorAll('.grid-node')
       .forEach(node => {
+      // Prevent the nodes from animating when hovered over.
+      node.querySelector('div').classList.add('frozen');
+
+      // Remove the onclick callback.
       node.onclick = 0;
     });
-  }
-
-  // Search an array of neighboring nodes for total number of mines.
-  module.getNeighboringMinesCount = function (neighborArray) {
-    let neighboringMines = 0;
-    for (let count = 0; count < neighborArray.length; count++) {
-      if (module.gridArrayMined.indexOf(neighborArray[count]) != -1) {
-        neighboringMines++;
-      }
-    }
-
-    return neighboringMines;
   }
 
   module.searchForNearbyMines = function (index) {
@@ -145,13 +172,15 @@
       } else {
         /* If node does not have any mines for neighbors, check all of
         its neighboring nodes, making sure not to add a node that has
-        already been evaluated, or marked for evaluation, to either list. */
+        already been clicked, evaluated, or marked for evaluation, to
+        either list. */
         for (let i = 0; i < neighborArray.length; ++i) {
           const value = neighborArray[i];
-          if (checkedNodes.indexOf(value) === -1) {
-            if (uncheckedNodes.indexOf(value) === -1) {
+          if (!document.getElementById(`grid-node-${value}`).classList
+            .contains('clicked')
+            && (checkedNodes.indexOf(value) === -1)
+            && (uncheckedNodes.indexOf(value) === -1)) {
               uncheckedNodes.push(value);
-            }
           }
         }
       }
