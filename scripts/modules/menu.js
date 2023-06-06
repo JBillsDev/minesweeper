@@ -43,21 +43,21 @@
     document.getElementById('difficulty-easy')
       .addEventListener('click', () => {
       module.setDifficulty('easy');
-      module.createGrid();
+      module.startNewGame();
       module.closeFullMenu();
     });
 
     document.getElementById('difficulty-medium')
       .addEventListener('click', () => {
       module.setDifficulty('medium');
-      module.createGrid();
+      module.startNewGame();
       module.closeFullMenu();
     });
 
     document.getElementById('difficulty-hard')
       .addEventListener('click', () => {
       module.setDifficulty('hard');
-      module.createGrid();
+      module.startNewGame();
       module.closeFullMenu();
     });
   }
@@ -82,21 +82,21 @@
     document.getElementById('grid-size-small')
       .addEventListener('click', () => {
       module.setGridSize('small');
-      module.createGrid();
+      module.startNewGame();
       module.closeFullMenu();
     });
 
     document.getElementById('grid-size-medium')
       .addEventListener('click', () => {
       module.setGridSize('medium');
-      module.createGrid();
+      module.startNewGame();
       module.closeFullMenu();
     });
 
     document.getElementById('grid-size-large')
       .addEventListener('click', () => {
       module.setGridSize('large');
-      module.createGrid();
+      module.startNewGame();
       module.closeFullMenu();
     });
   }

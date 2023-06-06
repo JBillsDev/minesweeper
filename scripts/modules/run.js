@@ -7,6 +7,7 @@
     module.setGithubLinkCallbacks();
     module.setGridSizeMenuCallbacks();
     module.setGameOverCallbacks();
+    module.setGameWinCallbacks();
     module.setMenuCallbacks();
 
     // Set the default difficulty and grid size.

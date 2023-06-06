@@ -11,16 +11,28 @@
 </head>
 <body>
   <section id="minesweeper">
-    <div id="game-over-menu">
-      <h2>Game Over</h2>
+    <div id="info-menu" class="floating-menu">
+      <h2>Control Key</h2>
+      <p>
+        Holding down the 'Control' key will allow you to place
+        flags.
+      </p>
+    </div>
+    <div id="win-menu" class="floating-menu">
+      <h2>You Win!</h2>
       <p>Play again?</p>
-      <div id="game-over-buttons">
-        <p id="game-over-yes" class="raised-btn">Yes</p>
-        <p id="game-over-no" class="raised-btn">No</p>
+      <div id="game-win-buttons" class="game-end-buttons">
+        <p class="game-end-yes raised-btn">Yes</p>
+        <p class="game-end-no raised-btn">No</p>
       </div>
     </div>
-    <div id="info-menu">
-      
+    <div id="game-over-menu" class="floating-menu">
+      <h2>Game Over</h2>
+      <p>Play again?</p>
+      <div id="game-end-buttons" class="game-end-buttons">
+        <p class="game-end-yes raised-btn ">Yes</p>
+        <p class="game-end-no raised-btn">No</p>
+      </div>
     </div>
     <header>
       <a href="https://github.com/JBillsDev/minesweeper" target="_blank"><i id="minesweeper-github" class="fa-brands fa-github fa-xl"></i></a>

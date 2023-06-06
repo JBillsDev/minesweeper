@@ -1,7 +1,19 @@
 (function (module) {
+  module.checkForWinCondition = function () {
+    const nodesClickedCount = document.getElementById('game-grid')
+      .querySelectorAll('.clicked').length;
+
+    // If all nodes are flagged or revealed, the game is won.
+    if ((nodesClickedCount + module.flagsPlaced == module.gridSize)
+        && module.flagsPlaced == module.chosenMineCount) {
+          module.setGameWinState();
+    }
+  }
+
   module.startNewGame = function () {
-    // Remove the Game Over screen.
-    module.revealGameOverScreen(false);
+    // Remove any open menus.
+    module.revealGameOverMenu(false);
+    module.revealWinMenu(false);
 
     // Clear any existing interval.
     clearInterval(module.mineRevealerIntervalID);

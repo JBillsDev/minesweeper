@@ -1,17 +1,27 @@
 (function (module) {
   module.gameOverTimeoutID = 0;
 
+  module.revealGameOverMenu = function (enable) {
+    const value = (enable ? 'flex' : 'none');
+    document.getElementById('game-over-menu').style.setProperty('display', value);
+  }
+
+  module.revealWinMenu = function (enable) {
+    const value = (enable ? 'flex' : 'none');
+    document.getElementById('win-menu').style.setProperty('display', value);
+  }
+
+  // Set the Game Over menu buttons click callbacks.
   module.setGameOverCallbacks = function () {
-    // Set the Game Over menu buttons click callbacks.
-    document.getElementById('game-over-yes').addEventListener('click', () => {
-      module.createGrid();
-      document.getElementById('game-over-menu').style
-        .setProperty('display', 'none');
+    const gameOverMenu = document.getElementById('game-over-menu');
+
+    gameOverMenu.querySelector('.game-end-yes').addEventListener('click', () => {
+      module.startNewGame();
+      gameOverMenu.style.setProperty('display', 'none');
     });
 
-    document.getElementById('game-over-no').addEventListener('click', () => {
-      document.getElementById('game-over-menu').style
-        .setProperty('display', 'none');
+    gameOverMenu.querySelector('.game-end-no').addEventListener('click', () => {
+      gameOverMenu.style.setProperty('display', 'none');
     });
   }
 
@@ -52,18 +62,29 @@
         
         // Set a delay before the game over screen appears.
         module.gameOverTimeoutID = setTimeout(() => {
-          module.revealGameOverScreen(true);
+          module.revealGameOverMenu(true);
         }, 2000);
       }
     }, module.mineRevealDelay, iterator);
   }
 
-  module.revealGameOverScreen = function (enable) {
-    if (enable) {
-      document.getElementById('game-over-menu').style.setProperty('display', 'flex');
-    } else {
-      document.getElementById('game-over-menu').style.setProperty('display', 'none');
-    }
+  // Set the Game Win menu buttons click callbacks.
+  module.setGameWinCallbacks = function () {
+    const gameWinMenu = document.getElementById('win-menu');
+    
+    gameWinMenu.querySelector('.game-end-yes').addEventListener('click', () => {
+      module.startNewGame();
+      gameWinMenu.style.setProperty('display', 'none');
+    });
+
+    gameWinMenu.querySelector('.game-end-no').addEventListener('click', () => {
+      gameWinMenu.style.setProperty('display', 'none');
+    });
+  }
+
+  module.setGameWinState = function () {
+    module.removeNodeOnClickEvents();
+    module.revealWinMenu(true);
   }
 
   return module;

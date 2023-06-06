@@ -1,7 +1,7 @@
 import "./modules/flags.js";
 import "./modules/game.js";
 import "./modules/game_grid.js";
-import "./modules/game_over.js";
+import "./modules/game_end.js";
 import "./modules/github.js"
 import "./modules/menu.js";
 import "./modules/mines.js";
