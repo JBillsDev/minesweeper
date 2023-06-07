@@ -5,9 +5,9 @@
     
     // Return if no stored settings were found.
     if (settings === null || settings.length != module.storageLength) {
-      module.difficultyCurrent = module.difficultyMediumBtn;
-      module.gridSizeCurrent = module.gridSizeMedium;
-
+      module.setDifficulty(module.difficultyMedium);
+      module.setGridSize(module.gridSizeMedium);
+      
       return;
     }
 
@@ -90,6 +90,7 @@
   }
 
   module.updateSettingsToStorage = function() {
+    console.log('updated');
     // Convert from JSON string.
     let settings = JSON.parse(localStorage.getItem(module.storageKey));
 
