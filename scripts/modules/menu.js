@@ -1,7 +1,7 @@
 (function (module) {
   module.closeDifficultyMenu = function () {
-    document.getElementById('difficulty-btn').classList.remove('active');
-    document.getElementById('difficulty-menu').classList.remove('active');
+    document.getElementById(module.HTMLDifficultyButtonID).classList.remove('active');
+    document.getElementById(module.HTMLGridDifficultyMenuID).classList.remove('active');
   }
 
   // Close all menus open in the main hamburger menu.
@@ -12,8 +12,8 @@
   }
 
   module.closeGridSizeMenu = function () {
-    document.getElementById('grid-size-btn').classList.remove('active');
-    document.getElementById('grid-size-menu').classList.remove('active');
+    document.getElementById(module.HTMLGridSizeButtonID).classList.remove('active');
+    document.getElementById(module.HTMLGridSizeMenuID).classList.remove('active');
   }
 
   module.closeHamburgerMenu = function () {
@@ -24,43 +24,43 @@
   }
 
   module.displayInfo = function () {
-    document.getElementById('info-menu').style.setProperty('display', 'flex');
+    document.getElementById(module.HTMLInfoMenuID).style.setProperty('display', 'flex');
   }
   
   module.setDifficultyMenuCallbacks = function () {
     // Set the game difficulty menu active on click.
-    document.getElementById('difficulty-btn')
+    document.getElementById(module.HTMLDifficultyButtonID)
       .addEventListener('click', () => {
       // Make sure grid size menu is not open at the same time.
       module.closeGridSizeMenu();
 
-      const difficultyBtn = document.getElementById('difficulty-btn');
+      const difficultyBtn = document.getElementById(module.HTMLDifficultyButtonID);
       if (difficultyBtn.classList.contains('active')) {
         module.closeDifficultyMenu();
       } else {
         difficultyBtn.classList.add('active');
-        document.getElementById('difficulty-menu').classList.add('active');
+        document.getElementById(module.HTMLGridDifficultyMenuID).classList.add('active');
       }
     });
 
     // Set the difficulty buttons click callbacks.
-    document.getElementById('difficulty-easy')
+    document.getElementById(module.HTMLDifficultyEasyID)
       .addEventListener('click', () => {
-      module.setDifficulty('easy');
+      module.setDifficulty(module.difficultyEasy);
       module.startNewGame();
       module.closeFullMenu();
     });
 
-    document.getElementById('difficulty-medium')
+    document.getElementById(module.HTMLDifficultyMediumID)
       .addEventListener('click', () => {
-      module.setDifficulty('medium');
+      module.setDifficulty(module.difficultyMedium);
       module.startNewGame();
       module.closeFullMenu();
     });
 
-    document.getElementById('difficulty-hard')
+    document.getElementById(module.HTMLDifficultyHardID)
       .addEventListener('click', () => {
-      module.setDifficulty('hard');
+      module.setDifficulty(module.difficultyHard);
       module.startNewGame();
       module.closeFullMenu();
     });
@@ -68,38 +68,38 @@
 
   module.setGridSizeMenuCallbacks = function() {
     // Set the grid size menu active on click.
-    document.getElementById('grid-size-btn')
+    document.getElementById(module.HTMLGridSizeButtonID)
       .addEventListener('click', () => {
       // Make sure difficulty menu is not open at the same time.
       module.closeDifficultyMenu();
 
-      const gridSizeBtn = document.getElementById('grid-size-btn');
+      const gridSizeBtn = document.getElementById(module.HTMLGridSizeButtonID);
       if (gridSizeBtn.classList.contains('active')) {
         module.closeGridSizeMenu();
       } else {
         gridSizeBtn.classList.add('active');
-        document.getElementById('grid-size-menu').classList.add('active');
+        document.getElementById(module.HTMLGridSizeMenuID).classList.add('active');
       }
     });
 
     // Set the grid size buttons click callbacks
-    document.getElementById('grid-size-small')
+    document.getElementById(module.HTMLGridSizeSmallID)
       .addEventListener('click', () => {
-      module.setGridSize('small');
+      module.setGridSize(module.gridSizeSmall);
       module.startNewGame();
       module.closeFullMenu();
     });
 
-    document.getElementById('grid-size-medium')
+    document.getElementById(module.HTMLGridSizeMediumID)
       .addEventListener('click', () => {
-      module.setGridSize('medium');
+      module.setGridSize(module.gridSizeMedium);
       module.startNewGame();
       module.closeFullMenu();
     });
 
-    document.getElementById('grid-size-large')
+    document.getElementById(module.HTMLGridSizeLargeID)
       .addEventListener('click', () => {
-      module.setGridSize('large');
+      module.setGridSize(module.gridSizeLarge);
       module.startNewGame();
       module.closeFullMenu();
     });
@@ -108,20 +108,20 @@
   module.setInfoMenuCallbacks = function() {
     document.getElementById('info-btn-ok')
       .addEventListener('click', () => {
-        document.getElementById('info-menu').style
+        document.getElementById(module.HTMLInfoMenuID).style
           .setProperty('display', 'none');
       });
   }
 
   module.setMenuCallbacks = function () {
     // Set the menu to active or inactive on click.
-    document.getElementById('minesweeper-menu-btn')
+    document.getElementById(module.HTMLHamburgerButtonID)
       .addEventListener('click', () => {
-      const menuBtn = document.getElementById('minesweeper-menu-btn');
+      const menuBtn = document.getElementById(module.HTMLHamburgerButtonID);
       if (menuBtn.classList.contains('active')) {
         module.closeFullMenu();
       } else {
-        document.getElementById('minesweeper-menu')
+        document.getElementById(module.HTMLHamburgerMenuID)
           .classList.add('active');
         menuBtn.classList.add('active');
       }

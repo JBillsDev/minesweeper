@@ -1,14 +1,4 @@
 (function (module) {
-  // Timers and Delays
-  module.gridArrayEmpty = [];
-  module.gridArrayMined = [];
-
-  module.gridWidth = 0;
-  module.gridHeight = 0;
-  module.gridSize = 0;
-  module.gridSizeCurrent = 'medium';
-  module.difficultyCurrent = 'medium';
-
   module.clearGrid = function () {
     // Clear the empty and mined arrays
     module.gridArrayEmpty = [];

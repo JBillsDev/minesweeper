@@ -1,17 +1,12 @@
 (function (module) {
-  module.storageIndexDifficulty = 0;
-  module.storageIndexGridSize = 1;
-  module.storageLength = 2;
-
   module.readSettingsFromLocalStorage = function() {
     // Retrieve settings from local storage and convert from JSON string.
-    let settings = JSON.parse(localStorage
-      .getItem('jbd_minesweeper_settings'));
+    let settings = JSON.parse(localStorage.getItem(module.storageKey));
     
     // Return if no stored settings were found.
     if (settings === null || settings.length != module.storageLength) {
-      module.difficultyCurrent = 'medium';
-      module.gridSizeCurrent = 'medium';
+      module.difficultyCurrent = module.difficultyMediumBtn;
+      module.gridSizeCurrent = module.gridSizeMedium;
 
       return;
     }
@@ -24,9 +19,12 @@
     module.difficultyCurrent = difficultyString;
 
     // Get difficulty button elements.
-    const difficultyEasyBtn = document.getElementById('difficulty-easy');
-    const difficultyMediumBtn = document.getElementById('difficulty-medium');
-    const difficultyHardBtn = document.getElementById('difficulty-hard');
+    const difficultyEasyBtn = document
+      .getElementById(module.HTMLDifficultyEasyID);
+    const difficultyMediumBtn = document
+      .getElementById(module.HTMLDifficultyMediumID);
+    const difficultyHardBtn = document
+      .getElementById(module.HTMLDifficultyHardID);
     
     // Remove the existing check mark.
     difficultyEasyBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
@@ -35,13 +33,13 @@
 
     // Add the check mark to the newly selected difficulty.
     switch(module.difficultyCurrent) {
-      case 'easy':
+      case module.difficultyEasy:
         difficultyEasyBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
         break;
-      case 'medium':
+      case module.difficultyMedium:
         difficultyMediumBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
         break;
-      case 'hard':
+      case module.difficultyHard:
         difficultyHardBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
         break;
     }
@@ -53,9 +51,12 @@
     module.gridSizeCurrent = gridSizeString;
 
     // Get grid size button elements.
-    const gridSizeSmallBtn = document.getElementById('grid-size-small');
-    const gridSizeMediumBtn = document.getElementById('grid-size-medium');
-    const gridSizeLargeBtn = document.getElementById('grid-size-large');
+    const gridSizeSmallBtn = document
+      .getElementById(module.HTMLGridSizeSmallID);
+    const gridSizeMediumBtn = document
+      .getElementById(module.HTMLGridSizeMediumID);
+    const gridSizeLargeBtn = document
+      .getElementById(module.HTMLGridSizeLargeID);
 
     // Remove the existing check mark.
     gridSizeSmallBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
@@ -63,22 +64,22 @@
     gridSizeLargeBtn.querySelector('i').classList.remove('fa-solid', 'fa-check');
 
     // Grab reference to game grid
-    const gameGrid = document.getElementById('game-grid');
+    const gameGrid = document.getElementById(module.HTMLGameGridID);
 
     /* Add the check mark to the newly selected grid size, and update the
     relevant grid display properties to adapt to the new node size. */
     switch(module.gridSizeCurrent) {
-      case 'small':
+      case module.gridSizeSmall:
         gridSizeSmallBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
         gameGrid.style.setProperty('font-size', '2rem');
         gameGrid.style.setProperty('padding-top', '5px');
         break;
-      case 'medium':
+      case module.gridSizeMedium:
         gridSizeMediumBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
         gameGrid.style.setProperty('font-size', '1.2rem');
         gameGrid.style.setProperty('padding-top', '3px');
         break;
-      case 'large':
+      case module.gridSizeLarge:
         gridSizeLargeBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
         gameGrid.style.setProperty('font-size', '0.8rem');
         gameGrid.style.setProperty('padding-top', '-3px');
@@ -90,8 +91,7 @@
 
   module.updateSettingsToStorage = function() {
     // Convert from JSON string.
-    let settings = JSON.parse(localStorage
-      .getItem('jbd_minesweeper_settings'));
+    let settings = JSON.parse(localStorage.getItem(module.storageKey));
 
     /* If no stored settings were found, or the settings might be
     invalid due to an incorrect array size, create a new array. */
@@ -106,8 +106,7 @@
     settings[module.storageIndexGridSize] = module.gridSizeCurrent;
 
     // Convert to JSON string and save in local storage.
-    localStorage.setItem('jbd_minesweeper_settings',
-      JSON.stringify(settings));
+    localStorage.setItem(module.storageKey, JSON.stringify(settings));
   }
 
   return module;

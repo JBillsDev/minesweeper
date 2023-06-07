@@ -91,7 +91,7 @@
   module.onNodeClick = function (node, index) {
     // Place or remove flag if flag placement is enabled.
     if (module.flagPlacementEnabled) {
-      if (node.classList.contains('flagged')) {
+      if (node.classList.contains(module.HTMLNodeFlaggedClass)) {
         module.placeFlag(node, false);
       } else {
         module.placeFlag(node, true);
@@ -102,7 +102,7 @@
     
     /* If flag placement is not enabled, but a flag exists,
     remove the flag instead of revealing the node. */
-    if (node.classList.contains('flagged')) {
+    if (node.classList.contains(module.HTMLNodeFlaggedClass)) {
       module.placeFlag(node, false);
 
       return;
@@ -127,7 +127,8 @@
   }
 
   module.removeNodeInteractions = function () {
-    document.getElementById('game-grid').querySelectorAll('.grid-node')
+    document.getElementById(module.HTMLGameGridID)
+      .querySelectorAll('.grid-node')
       .forEach(node => {
       // Prevent the nodes from animating when hovered over.
       node.querySelector('div').classList.add('frozen');

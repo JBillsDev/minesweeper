@@ -1,6 +1,4 @@
 (function (module) {
-  module.gameOverTimeoutID = 0;
-
   module.closeGameEndMenus = function () {
     module.revealGameOverMenu(false);
     module.revealWinMenu(false);
@@ -8,36 +6,42 @@
 
   module.revealGameOverMenu = function (enable) {
     const value = (enable ? 'flex' : 'none');
-    document.getElementById('game-over-menu').style.setProperty('display', value);
+    document.getElementById(module.HTMLGameOverMenuID).style
+      .setProperty('display', value);
   }
 
   module.revealWinMenu = function (enable) {
     const value = (enable ? 'flex' : 'none');
-    document.getElementById('win-menu').style.setProperty('display', value);
+    document.getElementById(module.HTMLGameWinMenuID).style
+      .setProperty('display', value);
   }
 
   // Set the Game Over menu buttons click callbacks.
   module.setGameOverCallbacks = function () {
-    const gameOverMenu = document.getElementById('game-over-menu');
+    const gameOverMenu = document
+      .getElementById(module.HTMLGameOverMenuID);
 
-    gameOverMenu.querySelector('.game-btn-yes').addEventListener('click', () => {
+    gameOverMenu.querySelector(module.HTMLBtnYesQuery)
+      .addEventListener('click', () => {
       module.startNewGame();
       gameOverMenu.style.setProperty('display', 'none');
     });
 
-    gameOverMenu.querySelector('.game-btn-no').addEventListener('click', () => {
+    gameOverMenu.querySelector(module.HTMLBtnNoQuery)
+      .addEventListener('click', () => {
       gameOverMenu.style.setProperty('display', 'none');
     });
   }
 
   module.setGameOverState = function () {
-    const minesweeper = document.getElementById('minesweeper');
-  
+    const minesweeper = document.getElementById(module.HTMLMinesweeperID);
+    const gameOverClass = 'game-over';
+
     // Trigger the red flash of the mine blowing up.
-    minesweeper.classList.add('game-over');
+    minesweeper.classList.add(gameOverClass);
     // Set the timer for the red flash class to be removed.
     setTimeout(() => {
-      minesweeper.classList.remove('game-over');
+      minesweeper.classList.remove(gameOverClass);
     }, 500);
   
     // Prevent further nodes from being interacted with.
@@ -84,14 +88,17 @@
 
   // Set the Game Win menu buttons click callbacks.
   module.setGameWinCallbacks = function () {
-    const gameWinMenu = document.getElementById('win-menu');
+    const gameWinMenu = document
+      .getElementById(module.HTMLGameWinMenuID);
     
-    gameWinMenu.querySelector('.game-btn-yes').addEventListener('click', () => {
+    gameWinMenu.querySelector(module.HTMLBtnYesQuery)
+      .addEventListener('click', () => {
       module.startNewGame();
       gameWinMenu.style.setProperty('display', 'none');
     });
 
-    gameWinMenu.querySelector('.game-btn-no').addEventListener('click', () => {
+    gameWinMenu.querySelector(module.HTMLBtnNoQuery)
+      .addEventListener('click', () => {
       gameWinMenu.style.setProperty('display', 'none');
     });
   }
