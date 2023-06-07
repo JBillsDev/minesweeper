@@ -1,4 +1,25 @@
 (function (module) {
+  module.storageIndexDifficulty = 0;
+  module.storageIndexGridSize = 1;
+  module.storageLength = 2;
+
+  module.readSettingsFromLocalStorage = function() {
+    // Retrieve settings from local storage and convert from JSON string.
+    let settings = JSON.parse(localStorage
+      .getItem('jbd_minesweeper_settings'));
+    
+    // Return if no stored settings were found.
+    if (settings === null || settings.length != module.storageLength) {
+      module.difficultyCurrent = 'medium';
+      module.gridSizeCurrent = 'medium';
+
+      return;
+    }
+
+    module.setDifficulty(settings[module.storageIndexDifficulty]);
+    module.setGridSize(settings[module.storageIndexGridSize]);
+  }
+
   module.setDifficulty = function (difficultyString) {
     module.difficultyCurrent = difficultyString;
 
@@ -24,6 +45,8 @@
         difficultyHardBtn.querySelector('i').classList.add('fa-solid', 'fa-check');
         break;
     }
+
+    module.updateSettingsToStorage();
   }
 
   module.setGridSize = function (gridSizeString) {
@@ -61,6 +84,30 @@
         gameGrid.style.setProperty('padding-top', '-3px');
         break;
     }
+
+    module.updateSettingsToStorage();
+  }
+
+  module.updateSettingsToStorage = function() {
+    // Convert from JSON string.
+    let settings = JSON.parse(localStorage
+      .getItem('jbd_minesweeper_settings'));
+
+    /* If no stored settings were found, or the settings might be
+    invalid due to an incorrect array size, create a new array. */
+    if (settings === null || settings.length != module.storageLength) {
+      settings = [];
+      // Set array to the correct size to store the settings.
+      settings.length = module.storageLength;
+    }
+
+    // Ensure settings are always saved in the correct order.
+    settings[module.storageIndexDifficulty] = module.difficultyCurrent;
+    settings[module.storageIndexGridSize] = module.gridSizeCurrent;
+
+    // Convert to JSON string and save in local storage.
+    localStorage.setItem('jbd_minesweeper_settings',
+      JSON.stringify(settings));
   }
 
   return module;
