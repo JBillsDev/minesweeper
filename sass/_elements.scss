@@ -1,0 +1,118 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  background: #cecece;
+  font-size: 1.6rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+}
+
+a {
+  color: $minesweeper-color-text;
+  font-size: 2rem;
+
+  &:hover {
+    color: $minesweeper-color-secondary;
+  }
+}
+
+footer,
+header {
+  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center; 
+  height: $minesweeper-head-height;
+}
+
+footer {
+  padding: 12px;
+
+  div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 160px;
+    font-size: 1.6rem;
+
+    h2 {
+      background: #222;
+      padding: 7px;
+      font-size: 1.6rem;
+    }
+  }
+}
+
+// The title and menu bar above the game grid.
+header {
+  h1 {
+    flex-grow: 1;
+    font-size: 2.4rem;
+  }
+
+  i {
+    padding: 0 20px 0;
+
+    &.active {
+      color:#777;
+    }
+  }
+
+  div {
+    position: relative;
+
+    #grid-size-menu,
+    #difficulty-menu {
+      right: calc($minesweeper-width-half - $minesweeper-border-size);
+    }
+  }
+}
+
+ul {
+  background: #333;
+  position: absolute;
+  top: calc($minesweeper-head-height / 2 + 2px);
+  right: calc(0px - $minesweeper-border-size);
+  list-style: none;
+  font-size: 2rem;
+  line-height: 4rem;
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  width: $minesweeper-width-half;
+
+  &.active {
+    display: flex;
+  }
+
+  li {
+    border: $minesweeper-border-style;
+    border-top: none;
+    padding: 6px 4px;
+    display:flex;
+    align-items: center;
+    font-size: 1.3rem;
+
+    p {
+      display: inline-block;
+      margin-right: 10px;
+      flex-grow: 1;
+    }
+
+    &:hover,
+    &.active {
+      color:#777;
+    }
+  }
+}

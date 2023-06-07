@@ -1,0 +1,58 @@
+.game-grid {
+  flex-grow: 1;
+  display: grid;
+  font-size: 0.8rem;
+  line-height: 0.8rem;
+  background-color: $minesweeper-color-secondary;
+  border-bottom: $minesweeper-border-size $minesweeper-color-secondary solid;
+
+  // A clickable node, may be empty or mined
+  .grid-node {
+    background: #88c;
+    border: 1px #fff solid;
+    overflow: hidden;
+
+    &.clicked,
+    &.clicked:hover {
+      background: #449;
+    }
+
+    &.clicked div,
+    &.clicked div:hover {
+      border: $minesweeper-border-size #66b solid;
+    }
+
+    &.clicked div.frozen {
+      border: $minesweeper-border-size #66b solid;
+      background: #449;
+    }
+
+    &:hover {
+      background: #aae;
+    }
+
+    &:active {
+      background: #55a;
+    }
+
+    div {
+      border: $minesweeper-border-size #aae solid;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      padding-top: 5px;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+
+      &:hover {
+        border: $minesweeper-border-size #dde solid;
+      }
+
+      &.frozen {
+        border: $minesweeper-border-size #aae solid;
+        background: #88c;
+      }
+    }
+  }
+}
