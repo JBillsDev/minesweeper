@@ -3,6 +3,23 @@
   module.flagsPlaced = 0;
   // Whether or not the player is holding the flag placement key down.
   module.flagPlacementEnabled = false;
+  /* Used to prevent removing the flag placement mode if user 'clicks
+  off' flag placement while the flag placement key is still held down. */
+  module.flagPlacementKeyHeld = false;
+
+  module.enableFlagPlacement = function(value) {
+    const flag = document.getElementById('flag');
+
+    if (value) {
+      document.getElementById('game-grid').classList.add('flag-cursor');
+      flag.classList.add('highlight-text-flag');
+    } else {
+      document.getElementById('game-grid').classList.remove('flag-cursor');
+      flag.classList.remove('highlight-text-flag');
+    }
+
+    module.flagPlacementEnabled = value;
+  }
 
   module.placeFlag = function(node, value) {
     const child = node.querySelector('div');
@@ -42,15 +59,26 @@
     // Register the control key as the flag-placement active-toggle.
     document.addEventListener('keydown', (e) => {
       if (e.key === "Control") {
-        module.flagPlacementEnabled = true;
-        document.getElementById('game-grid').classList.add('flag-cursor');
+        module.flagPlacementKeyHeld = true;
+        module.enableFlagPlacement(true);
       }
     });
 
     document.addEventListener('keyup', (e) => {
       if (e.key === "Control") {
-        module.flagPlacementEnabled = false;
-        document.getElementById('game-grid').classList.remove('flag-cursor');
+        module.flagPlacementKeyHeld = false;
+        module.enableFlagPlacement(false);
+      }
+    });
+
+    document.getElementById('flag')
+      .addEventListener('click', () => {
+      // Toggle flag placement from current active state.
+      if (module.flagPlacementEnabled
+          && !module.flagPlacementKeyHeld) {
+        module.enableFlagPlacement(false);
+      } else {
+        module.enableFlagPlacement(true);
       }
     });
   }
