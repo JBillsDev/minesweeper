@@ -5,8 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/minesweeper.css">
+  <link rel="stylesheet" href="css/style.css">
   <title>Minesweeper</title>
 </head>
 <body>
@@ -15,7 +14,7 @@
       <h2>Place Flag</h2>
       <hr>
       <p>
-        Holding down the <span class="highlight">'Control'</span> key will allow you to place
+        Holding down the <span class="highlight-text">'Control'</span> key will allow you to place
         flags.
       </p>
       <hr>
@@ -32,7 +31,7 @@
       </div>
     </div>
     <div id="game-over-menu" class="floating-menu">
-      <h2>Game Over</h2>
+      <h2 class="highlight-text">Game Over</h2>
       <p>Play again?</p>
       <div id="game-btn-buttons" class="game-buttons">
         <p class="game-btn-yes raised-btn ">Yes</p>
@@ -66,11 +65,11 @@
     <footer>
       <div>
         <p>Mines:</p>
-        <h2 id="mine-count" class="raised-btn">20</h2>
+        <h2 id="mine-count" class="raised-btn highlight-text">20</h2>
       </div>
       <div>
         <p>Flags:</p>
-        <h2 id="flag-count" class="raised-btn">20</h2>
+        <h2 id="flag-count" class="raised-btn highlight-text">20</h2>
       </div>
     </footer>
   </section>

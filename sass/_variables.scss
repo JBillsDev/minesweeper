@@ -1,0 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+$minesweeper-width: 400px;
+$minesweeper-height: 600px;
+$minesweeper-width-half: calc($minesweeper-width/2);
+$minesweeper-head-height: 50px;
+$minesweeper-border-size: 4px;
+$minesweeper-color-highlight: #f00;
+$minesweeper-color-primary: #333;
+$minesweeper-color-secondary: #999;
+$minesweeper-color-text: #fff;
+$minesweeper-border-style: $minesweeper-border-size $minesweeper-color-secondary solid;

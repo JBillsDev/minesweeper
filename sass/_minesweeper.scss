@@ -1,0 +1,51 @@
+#minesweeper {
+  background: $minesweeper-color-primary;
+  width: $minesweeper-width;
+  height: $minesweeper-height;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Press Start 2P', sans-serif;
+  font-size: 1.5rem;
+  border: $minesweeper-border-style;
+  z-index: 0;
+  color: $minesweeper-color-text;
+  user-select: none;
+
+  #info-menu {
+    display: none;
+    width: 320px;
+    height: 220px;
+    line-height: 2rem;
+
+    hr {
+      width: 94%;
+    }
+  }
+
+  #win-menu {
+    display: none;
+    width: 250px;
+    height: 160px;
+  }
+
+  #game-over-menu {
+    display: none;
+    width: 250px;
+    height: 160px;
+  }
+
+  &.game-over::after {
+    content: '';
+    position: fixed;
+    width: $minesweeper-width;
+    height: $minesweeper-height;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+    background: $minesweeper-color-highlight;
+    z-index: 1;
+    animation: game-over-flash 0.2s linear 0s 1 normal forwards;
+  }
+}
