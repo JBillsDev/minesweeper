@@ -11,9 +11,8 @@
     module.setInfoMenuCallbacks();
     module.setMenuCallbacks();
 
-    // Set the default difficulty and grid size.
-    module.setDifficulty('medium');
-    module.setGridSize('medium');
+    // Read settings from local storage.
+    module.readSettingsFromLocalStorage();
 
     // Create the default size grid.
     module.startNewGame();
