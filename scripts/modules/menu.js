@@ -17,9 +17,9 @@
   }
 
   module.closeHamburgerMenu = function () {
-    document.getElementById('minesweeper-menu-btn').classList
+    document.getElementById(module.HTMLHamburgerButtonID).classList
       .remove('active');
-    document.getElementById('minesweeper-menu').classList
+    document.getElementById(module.HTMLHamburgerMenuID).classList
       .remove('active');
   }
 
