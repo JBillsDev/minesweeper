@@ -1,3 +1,4 @@
+import "./modules/config.js";
 import "./modules/flags.js";
 import "./modules/game.js";
 import "./modules/game_grid.js";

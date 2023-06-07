@@ -42,6 +42,7 @@
     module.createGrid();
     module.createMines();
     module.resetFlags();
+    module.resetMines();
   }
 
   return module;
