@@ -90,7 +90,6 @@
   }
 
   module.updateSettingsToStorage = function() {
-    console.log('updated');
     // Convert from JSON string.
     let settings = JSON.parse(localStorage.getItem(module.storageKey));
 
